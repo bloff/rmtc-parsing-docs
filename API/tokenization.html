@@ -1,0 +1,440 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tokenization &mdash; rmtc-parsing 0.1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="rmtc-parsing 0.1.1 documentation" href="../index.html"/>
+        <link rel="next" title="Transducers" href="transducers.html"/>
+        <link rel="prev" title="Syntax" href="syntax.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> rmtc-parsing
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="streams.html">Streams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="syntax.html">Syntax</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Tokenization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#readtable">Readtable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tokenizationcontext">TokenizationContext</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tokenizer">Tokenizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#indentationreadtabletokenizer">IndentationReadtableTokenizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#delimitertokenizer">DelimiterTokenizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stringtokenizer">StringTokenizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#commenttokenizer">CommentTokenizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rawcommenttokenizer">RawCommentTokenizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#delimitedidentifiertokenizer">DelimitedIdentifierTokenizer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="transducers.html">Transducers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsers.html">Parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">rmtc-parsing</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Tokenization</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+          <a href="../_sources/API/tokenization.txt" rel="nofollow"> View page source</a>
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tokenization">
+<span id="tokenization-modules"></span><h1>Tokenization<a class="headerlink" href="#tokenization" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="readtable">
+<span id="id1"></span><h2>Readtable<a class="headerlink" href="#readtable" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Tokenization.Readtable"></span><dl class="class">
+<dt id="Tokenization.Readtable.RT">
+<em class="property">class </em><tt class="descname">RT</tt><a class="reference internal" href="../_modules/Tokenization/Readtable.html#RT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tokenization.Readtable.RT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enum of readtable entry types.</p>
+<dl class="attribute">
+<dt id="Tokenization.Readtable.RT.WHITESPACE">
+<tt class="descname">WHITESPACE</tt><em class="property"> = None</em><a class="headerlink" href="#Tokenization.Readtable.RT.WHITESPACE" title="Permalink to this definition">¶</a></dt>
+<dd><p>A whitespace character sequence.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Tokenization.Readtable.RT.NEWLINE">
+<tt class="descname">NEWLINE</tt><em class="property"> = None</em><a class="headerlink" href="#Tokenization.Readtable.RT.NEWLINE" title="Permalink to this definition">¶</a></dt>
+<dd><p>A newline character sequence.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Tokenization.Readtable.RT.ISOLATED_CONSTITUENT">
+<tt class="descname">ISOLATED_CONSTITUENT</tt><em class="property"> = None</em><a class="headerlink" href="#Tokenization.Readtable.RT.ISOLATED_CONSTITUENT" title="Permalink to this definition">¶</a></dt>
+<dd><p>A constituent character sequence that should <em>not</em> be concatenated with other adjacent constituent sequences.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Tokenization.Readtable.RT.CONSTITUENT">
+<tt class="descname">CONSTITUENT</tt><em class="property"> = None</em><a class="headerlink" href="#Tokenization.Readtable.RT.CONSTITUENT" title="Permalink to this definition">¶</a></dt>
+<dd><p>A constituent character sequence that <em>should</em> be concatenated with other adjacent constituent sequences.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Tokenization.Readtable.RT.MACRO">
+<tt class="descname">MACRO</tt><em class="property"> = None</em><a class="headerlink" href="#Tokenization.Readtable.RT.MACRO" title="Permalink to this definition">¶</a></dt>
+<dd><p>A character sequence that begins a reader macro.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Tokenization.Readtable.RT.INVALID">
+<tt class="descname">INVALID</tt><em class="property"> = None</em><a class="headerlink" href="#Tokenization.Readtable.RT.INVALID" title="Permalink to this definition">¶</a></dt>
+<dd><p>A character sequence that should not appear.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Tokenization.Readtable.RT.CLOSING">
+<tt class="descname">CLOSING</tt><em class="property"> = None</em><a class="headerlink" href="#Tokenization.Readtable.RT.CLOSING" title="Permalink to this definition">¶</a></dt>
+<dd><p>A character sequence that signals the end of a reader macro.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Tokenization.Readtable.RT.PUNCTUATION">
+<tt class="descname">PUNCTUATION</tt><em class="property"> = None</em><a class="headerlink" href="#Tokenization.Readtable.RT.PUNCTUATION" title="Permalink to this definition">¶</a></dt>
+<dd><p>A punctuation character sequence.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Tokenization.Readtable.Readtable">
+<em class="property">class </em><tt class="descname">Readtable</tt><a class="reference internal" href="../_modules/Tokenization/Readtable.html#Readtable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tokenization.Readtable.Readtable" title="Permalink to this definition">¶</a></dt>
+<dd><p>A readtable. It associates certain characters or sequences of characters with a dictionary of so-called <em>properties</em> (which could be anything).
+For instance, lyc&#8217;s readtable associates the sequence <tt class="docutils literal">“</tt> with the properties <code class="docutils literal highlight highlight-python"><span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">RT</span><span class="o">.</span><span class="n">MACRO</span><span class="p">,</span> <span class="s">&#39;tokenizer&#39;</span><span class="p">:</span> <span class="s">&#39;StringTokenizer&#39;</span><span class="p">}</span></code>,
+which should mean that if a <tt class="docutils literal">“</tt> character is found, it signals a reader macro which is to be processed by the tokenizer called
+&#8216;StringTokenizer&#8217;.</p>
+<p>The table is organized as a prefix tree. Each path in the tree is a sequence in the table. Each node in the tree is
+encoded as a dictionary mapping characters to pairs <code class="docutils literal highlight highlight-python"><span class="p">[</span><span class="n">child_node</span><span class="p">,</span> <span class="n">properties</span><span class="p">]</span></code>. So, for instance, the default lyc readtable
+has in its root node a mapping from <code class="docutils literal highlight highlight-python"><span class="s">&#39;#&#39;</span></code> to <code class="docutils literal highlight highlight-python"><span class="p">[</span><span class="n">subnode</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;macro&#39;</span><span class="p">,</span> <span class="s">&#39;tokenizer&#39;</span><span class="p">:</span> <span class="s">&#39;CommentTokenizer&#39;</span><span class="p">}]</span></code>, where subnode
+has a mapping from <code class="docutils literal highlight highlight-python"><span class="s">&#39;#&#39;</span></code> to <code class="docutils literal highlight highlight-python"><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;macro&#39;</span><span class="p">,</span> <span class="s">&#39;tokenizer&#39;</span><span class="p">:</span><span class="s">&#39;RawCommentTokenizer&#39;</span><span class="p">}]</span></code>. This means that the <code class="docutils literal highlight highlight-python"><span class="s">&#39;#&#39;</span></code>
+sequence has properties <code class="docutils literal highlight highlight-python"><span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;macro&#39;</span><span class="p">,</span> <span class="s">&#39;tokenizer&#39;</span><span class="p">:</span> <span class="s">&#39;CommentTokenizer&#39;</span><span class="p">}</span></code>, and the &#8216;##&#8217; sequence has properties
+<code class="docutils literal highlight highlight-python"><span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;macro&#39;</span><span class="p">,</span> <span class="s">&#39;tokenizer&#39;</span><span class="p">:</span><span class="s">&#39;RawCommentTokenizer&#39;</span><span class="p">}</span></code>; it also means that there is no way of extending &#8216;##&#8217; into a larger
+entry of the readtable.</p>
+<dl class="attribute">
+<dt id="Tokenization.Readtable.Readtable.root_node">
+<tt class="descname">root_node</tt><em class="property"> = None</em><a class="headerlink" href="#Tokenization.Readtable.Readtable.root_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>The root of the prefix tree.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Tokenization.Readtable.Readtable.default_properties">
+<tt class="descname">default_properties</tt><em class="property"> = None</em><a class="headerlink" href="#Tokenization.Readtable.Readtable.default_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the property list of sequences of characters that are not entries in the readtable.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Tokenization.Readtable.Readtable.add_or_upd_seq">
+<tt class="descname">add_or_upd_seq</tt><big>(</big><em>sequence: str</em>, <em>properties: dict</em><big>)</big><a class="reference internal" href="../_modules/Tokenization/Readtable.html#Readtable.add_or_upd_seq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tokenization.Readtable.Readtable.add_or_upd_seq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Associates a given sequence of characters with the given properties dictionary,
+or updates the associated properties dictionary, if one is already present
+:param sequence: The sequence of characters to be entered/updated in the readtable.
+:param properties: The associated dictionary of properties.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Tokenization.Readtable.Readtable.query">
+<tt class="descname">query</tt><big>(</big><em>seq: str</em><big>)</big><a class="reference internal" href="../_modules/Tokenization/Readtable.html#Readtable.query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tokenization.Readtable.Readtable.query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries an entry in the readtable.
+:param seq: The sequence of characters to be queried.
+:return: a pair <code class="docutils literal highlight highlight-python"><span class="p">(</span><span class="n">properties</span><span class="p">,</span> <span class="n">continuation_possible</span><span class="p">)</span></code>, where <code class="docutils literal highlight highlight-python"><span class="n">properties</span></code> is the properties associated with
+the given sequence (which could be the <code class="docutils literal highlight highlight-python"><span class="n">default_properties</span></code>), and <code class="docutils literal highlight highlight-python"><span class="n">continuation_possible</span></code> is <code class="docutils literal highlight highlight-python"><span class="bp">True</span></code> iff the
+sequence can be extended to some other (longer) sequence in the read-table.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Tokenization.Readtable.Readtable.probe">
+<tt class="descname">probe</tt><big>(</big><em>stream: Streams.CharacterStream.CharacterStream</em><big>)</big><a class="reference internal" href="../_modules/Tokenization/Readtable.html#Readtable.probe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tokenization.Readtable.Readtable.probe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a stream one character at a time, as long as the read sequence of characters is an entry of the readtable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>stream</strong> &#8211; The stream to be probed.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A pair with the largest possible such sequence and the associated properties.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Tokenization.Readtable.make_readtable">
+<tt class="descname">make_readtable</tt><big>(</big><em>definition: list</em><big>)</big><a class="reference internal" href="../_modules/Tokenization/Readtable.html#make_readtable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tokenization.Readtable.make_readtable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new readtable.</p>
+<p>The parameter <code class="docutils literal highlight highlight-python"><span class="n">definition</span></code> should respect the following format:</p>
+<div class="highlight-python"><div class="highlight"><pre>definition := [ entries*, default_entry ]
+
+entries := [ type_property_value, seq_or_seqs, other_properties? ]
+
+default_entry := [&#39;DEFAULT&#39;, default_properties]
+</pre></div>
+</div>
+<p><code class="docutils literal highlight highlight-python"><span class="n">type_property_value</span></code> is the value associated with the type_property</p>
+<p><code class="docutils literal highlight highlight-python"><span class="n">seq_or_seqs</span></code> is a string or a list of strings.</p>
+<p><code class="docutils literal highlight highlight-python"><span class="n">other_properties</span></code> and <code class="docutils literal highlight highlight-python"><span class="n">default_properties</span></code> are dictionaries.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="tokenizationcontext">
+<span id="id2"></span><h2>TokenizationContext<a class="headerlink" href="#tokenizationcontext" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Tokenization.TokenizationContext.TokenizationContext">
+<em class="property">class </em><tt class="descname">TokenizationContext</tt><big>(</big><em>name</em>, <em>**root_bindings</em><big>)</big><a class="reference internal" href="../_modules/Tokenization/TokenizationContext.html#TokenizationContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tokenization.TokenizationContext.TokenizationContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <code class="docutils literal highlight highlight-python"><span class="n">Context</span></code> to be used during tokenization.
+For readtable-macro parsing, it is expected that the <code class="docutils literal highlight highlight-python"><span class="n">context</span></code>
+field will include at least a <code class="docutils literal highlight highlight-python"><span class="n">stream</span></code> (<a class="reference internal" href="streams.html#characterstream"><em>CharacterStream</em></a>)
+and a <code class="docutils literal highlight highlight-python"><span class="n">readtable</span></code> (<a class="reference internal" href="#readtable"><em>Readtable</em></a>).</p>
+</dd></dl>
+
+</div>
+<div class="section" id="tokenizer">
+<span id="id3"></span><h2>Tokenizer<a class="headerlink" href="#tokenizer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Tokenization.Tokenizer.Tokenizer">
+<em class="property">class </em><tt class="descname">Tokenizer</tt><big>(</big><em>context: Tokenization.TokenizationContext.TokenizationContext</em><big>)</big><a class="reference internal" href="../_modules/Tokenization/Tokenizer.html#Tokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tokenization.Tokenizer.Tokenizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <code class="docutils literal highlight highlight-python"><span class="n">Tokenizer</span></code> is an object for generating tokens (<a class="reference internal" href="syntax.html#token"><em>Token</em></a>).</p>
+<dl class="method">
+<dt id="Tokenization.Tokenizer.Tokenizer.run">
+<tt class="descname">run</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/Tokenization/Tokenizer.html#Tokenizer.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tokenization.Tokenizer.Tokenizer.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method should be a generator that yields tokens.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="indentationreadtabletokenizer">
+<span id="id4"></span><h2>IndentationReadtableTokenizer<a class="headerlink" href="#indentationreadtabletokenizer" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Tokenization.Tokenizers.IndentationReadtable"></span><dl class="class">
+<dt id="Tokenization.Tokenizers.IndentationReadtable.IndentationReadtableTokenizer">
+<em class="property">class </em><tt class="descname">IndentationReadtableTokenizer</tt><big>(</big><em>context: Tokenization.TokenizationContext.TokenizationContext</em><big>)</big><a class="reference internal" href="../_modules/Tokenization/Tokenizers/IndentationReadtable.html#IndentationReadtableTokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tokenization.Tokenizers.IndentationReadtable.IndentationReadtableTokenizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>This implements the readtable-macro parsing algorithm (with indentation), described in</p>
+<p><a class="reference external" href="https://bloff.github.io/lyc/lexing,/syntax/2015/08/30/lexer-2.html">https://bloff.github.io/lyc/lexing,/syntax/2015/08/30/lexer-2.html</a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="delimitertokenizer">
+<span id="id5"></span><h2>DelimiterTokenizer<a class="headerlink" href="#delimitertokenizer" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Tokenization.Tokenizers.Delimiter"></span><dl class="class">
+<dt id="Tokenization.Tokenizers.Delimiter.DelimiterTokenizer">
+<em class="property">class </em><tt class="descname">DelimiterTokenizer</tt><big>(</big><em>context: Tokenization.TokenizationContext.TokenizationContext</em>, <em>opening_delimiter: str</em>, <em>opening_delimiter_position: Streams.StreamPosition.StreamPosition</em>, <em>opening_delimiter_position_after: Streams.StreamPosition.StreamPosition</em><big>)</big><a class="reference internal" href="../_modules/Tokenization/Tokenizers/Delimiter.html#DelimiterTokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tokenization.Tokenizers.Delimiter.DelimiterTokenizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads blocks of code surrounded by pairs of delimiters.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="stringtokenizer">
+<span id="id6"></span><h2>StringTokenizer<a class="headerlink" href="#stringtokenizer" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Tokenization.Tokenizers.String"></span><dl class="class">
+<dt id="Tokenization.Tokenizers.String.StringTokenizer">
+<em class="property">class </em><tt class="descname">StringTokenizer</tt><big>(</big><em>context: Tokenization.TokenizationContext.TokenizationContext</em>, <em>opening_delimiter: str</em>, <em>opening_delimiter_position: Streams.StreamPosition.StreamPosition</em>, <em>opening_delimiter_position_after: Streams.StreamPosition.StreamPosition</em><big>)</big><a class="reference internal" href="../_modules/Tokenization/Tokenizers/String.html#StringTokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tokenization.Tokenizers.String.StringTokenizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads strings with interpolated code.</p>
+<p>See <a class="reference external" href="https://bloff.github.io/lyc/2015/10/04/lexer-3.html">https://bloff.github.io/lyc/2015/10/04/lexer-3.html</a>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="commenttokenizer">
+<span id="id7"></span><h2>CommentTokenizer<a class="headerlink" href="#commenttokenizer" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Tokenization.Tokenizers.Comment"></span><dl class="class">
+<dt id="Tokenization.Tokenizers.Comment.CommentTokenizer">
+<em class="property">class </em><tt class="descname">CommentTokenizer</tt><big>(</big><em>context: Tokenization.TokenizationContext.TokenizationContext</em>, <em>opening_delimiter: str</em>, <em>opening_delimiter_position: Streams.StreamPosition.StreamPosition</em>, <em>opening_delimiter_position_after: Streams.StreamPosition.StreamPosition</em><big>)</big><a class="reference internal" href="../_modules/Tokenization/Tokenizers/Comment.html#CommentTokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tokenization.Tokenizers.Comment.CommentTokenizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads comments with interpolated code.</p>
+<p>See <a class="reference external" href="https://bloff.github.io/lyc/2015/10/04/lexer-3.html">https://bloff.github.io/lyc/2015/10/04/lexer-3.html</a>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="rawcommenttokenizer">
+<span id="id9"></span><h2>RawCommentTokenizer<a class="headerlink" href="#rawcommenttokenizer" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Tokenization.Tokenizers.RawComment"></span><dl class="class">
+<dt id="Tokenization.Tokenizers.RawComment.RawCommentTokenizer">
+<em class="property">class </em><tt class="descname">RawCommentTokenizer</tt><big>(</big><em>context: Tokenization.TokenizationContext.TokenizationContext</em>, <em>opening_delimiter: str</em>, <em>opening_delimiter_position: Streams.StreamPosition.StreamPosition</em>, <em>opening_delimiter_position_after: Streams.StreamPosition.StreamPosition</em>, <em>readtable</em><big>)</big><a class="reference internal" href="../_modules/Tokenization/Tokenizers/RawComment.html#RawCommentTokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tokenization.Tokenizers.RawComment.RawCommentTokenizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads comments without interpolated code.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="delimitedidentifiertokenizer">
+<span id="id10"></span><h2>DelimitedIdentifierTokenizer<a class="headerlink" href="#delimitedidentifiertokenizer" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Tokenization.Tokenizers.DelimitedIdentifierTokenizer"></span><dl class="class">
+<dt id="Tokenization.Tokenizers.DelimitedIdentifierTokenizer.DelimitedIdentifierTokenizer">
+<em class="property">class </em><tt class="descname">DelimitedIdentifierTokenizer</tt><big>(</big><em>context: Tokenization.TokenizationContext.TokenizationContext</em>, <em>opening_delimiter: str</em>, <em>opening_delimiter_position: Streams.StreamPosition.StreamPosition</em>, <em>opening_delimiter_position_after: Streams.StreamPosition.StreamPosition</em><big>)</big><a class="reference internal" href="../_modules/Tokenization/Tokenizers/DelimitedIdentifierTokenizer.html#DelimitedIdentifierTokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tokenization.Tokenizers.DelimitedIdentifierTokenizer.DelimitedIdentifierTokenizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads identifiers surrounded by delimiters. Hence one can write identifiers with special chararacters, e.g., <code class="docutils literal highlight highlight-python">«1234 some identifier»</code>.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="transducers.html" class="btn btn-neutral float-right" title="Transducers" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="syntax.html" class="btn btn-neutral" title="Syntax" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bruno Loff.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

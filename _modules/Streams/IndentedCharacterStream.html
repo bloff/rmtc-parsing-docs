@@ -1,0 +1,417 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Streams.IndentedCharacterStream &mdash; rmtc-parsing 0.1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="rmtc-parsing 0.1.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> rmtc-parsing
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../API/common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/streams.html">Streams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/syntax.html">Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/tokenization.html">Tokenization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/transducers.html">Transducers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/parsers.html">Parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">rmtc-parsing</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+        <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>Streams.IndentedCharacterStream</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Streams.IndentedCharacterStream</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">Common.StringStuff</span> <span class="kn">import</span> <span class="n">EOF</span>
+<span class="kn">from</span> <span class="nn">Streams.CharacterStream</span> <span class="kn">import</span> <span class="n">CharacterStream</span>
+<span class="kn">from</span> <span class="nn">Streams.StreamPosition</span> <span class="kn">import</span> <span class="n">StreamPosition</span>
+<span class="kn">from</span> <span class="nn">Streams._common</span> <span class="kn">import</span> <span class="n">StreamError</span>
+
+
+
+
+<span class="k">class</span> <span class="nc">IndentedCharacterStream</span><span class="p">(</span><span class="n">CharacterStream</span><span class="p">):</span>
+<div class="viewcode-block" id="IndentedCharacterStream"><a class="viewcode-back" href="../../API/streams.html#Streams.IndentedCharacterStream.IndentedCharacterStream">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A character stream for parsing with indentation by ignoring leading whitespace.</span>
+<span class="sd">   &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span><span class="n">CharacterStream</span><span class="p">):</span>
+        <span class="n">CharacterStream</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c"># The stream from which we obtain the (absolute) characters.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="c"># Keeps the first StreamPosition_ of the various indentation levels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">parent</span><span class="o">.</span><span class="n">copy_position</span><span class="p">()]</span>
+
+        <span class="c"># Keeps the StreamPosition_ of the current character, relative to the position in the top of the stack</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_relative_position</span> <span class="o">=</span> <span class="n">StreamPosition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c"># Remembers whether the substream has finished reading</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_eof</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">unread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="IndentedCharacterStream.unread"><a class="viewcode-back" href="../../API/streams.html#Streams.IndentedCharacterStream.IndentedCharacterStream.unread">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Unreads characters from the current substream. Raises an error if an attempt is made</span>
+<span class="sd">        at unreading beyond the beginning.</span>
+
+<span class="sd">        :param n: The number of characters to unread.</span>
+<span class="sd">        :type n: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">last</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unread</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="n">last</span> <span class="o">!=</span> <span class="n">EOF</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unread</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">prev</span> <span class="o">+</span> <span class="n">last</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_relative_position</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">StreamError</span><span class="p">(</span><span class="s">&quot;Tried to unread character beyond beginning of (sub)stream.&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_eof</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">relative_eof</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">current_relative_position</span><span class="o">.</span><span class="n">index</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_relative_position</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">EOF</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">char</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="n">current_starting_column</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">visual_column</span>
+                <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+                    <span class="n">char</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">unread</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">visual_column</span> <span class="o">&lt;</span> <span class="n">current_starting_column</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">:</span>
+                            <span class="k">break</span>
+                        <span class="k">else</span><span class="p">:</span> <span class="k">continue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_relative_position</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">current_relative_position</span><span class="o">.</span><span class="n">index</span> <span class="o">-=</span> <span class="mi">1</span>
+
+                <span class="k">return</span> <span class="n">char</span>
+
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span></div>
+<div class="viewcode-block" id="IndentedCharacterStream.read"><a class="viewcode-back" href="../../API/streams.html#Streams.IndentedCharacterStream.IndentedCharacterStream.read">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the next character of the current substream. Raises an error if an attempt is made at reading beyond the EOF.</span>
+
+<span class="sd">        :rtype : str</span>
+<span class="sd">        :returns The next character in the current substream, or EOF if there are no more characters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_eof</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StreamError</span><span class="p">(</span><span class="s">&quot;Tried to read character beyond EOF.&quot;</span><span class="p">)</span>
+
+        <span class="n">char</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">current_starting_column</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">visual_column</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">visual_column</span> <span class="o">&lt;</span> <span class="n">current_starting_column</span><span class="p">:</span>
+            <span class="n">char</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s">&#39; &#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">unread</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_yield_eof</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">EOF</span>
+
+        <span class="k">if</span> <span class="n">char</span> <span class="o">!=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">:</span> <span class="n">char</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_line_check</span><span class="p">(</span><span class="n">current_starting_column</span><span class="p">):</span>
+            <span class="c"># if we find a newline character, and the next line</span>
+            <span class="c"># is either a blank line, or a line whose first non-whitespace</span>
+            <span class="c"># character begins at or after &quot;current_starting_column&quot;,</span>
+            <span class="c"># then we yield the newline character to the top reader</span>
+            <span class="c"># but if we find a newline character preceeding a line whose first</span>
+            <span class="c"># non-whitespace begins before `current_starting_column`, then</span>
+            <span class="c"># we yield EOF to the top reader</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">unread</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_yield_eof</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">EOF</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_relative_position</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_relative_position</span><span class="o">.</span><span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">char</span>
+
+    <span class="k">def</span> <span class="nf">_yield_eof</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_eof</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_relative_position</span><span class="o">.</span><span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_relative_position</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_relative_position</span><span class="o">.</span><span class="n">column</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_relative_position</span><span class="o">.</span><span class="n">visual_column</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">_next_line_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_starting_column</span><span class="p">):</span>
+        <span class="c"># assumes that a \n was just read by parent</span>
+        <span class="c"># returns True iff</span>
+        <span class="c"># the current line is empty, or</span>
+        <span class="c"># the first non-whitespace character of this line</span>
+        <span class="c">#  begins after `current_starting_column`</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">char</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s">&#39; &#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="ow">or</span> <span class="n">char</span> <span class="o">==</span> <span class="n">EOF</span><span class="p">:</span> <span class="c"># if the line was empty</span>
+                <span class="c"># unread the entire line</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">unread</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">unread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">column</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">first_non_whitespace_column</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">column</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">unread</span><span class="p">(</span><span class="n">first_non_whitespace_column</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">first_non_whitespace_column</span> <span class="o">&gt;=</span> <span class="n">current_starting_column</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">position</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StreamPosition</span><span class="p">:</span>
+<div class="viewcode-block" id="IndentedCharacterStream.position"><a class="viewcode-back" href="../../API/streams.html#Streams.IndentedCharacterStream.IndentedCharacterStream.position">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current relative position (the position relative to the last ``push`` operation).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_relative_position</span>
+
+
+    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">copy_position</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_relative_position</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_relative_position</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_eof</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">prev_is_EOF</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_relative_position</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_relative_position</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="mi">0</span> <span class="c"># no unread to previous-level characters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_eof</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">prev_is_EOF</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_update_relative_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fpos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">cpos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">position</span>
+        <span class="n">crpos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_relative_position</span>
+        <span class="n">crpos</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">cpos</span><span class="o">.</span><span class="n">line</span> <span class="o">-</span> <span class="n">fpos</span><span class="o">.</span><span class="n">line</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">crpos</span><span class="o">.</span><span class="n">column</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cpos</span><span class="o">.</span><span class="n">column</span> <span class="o">-</span> <span class="n">fpos</span><span class="o">.</span><span class="n">visual_column</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">crpos</span><span class="o">.</span><span class="n">visual_column</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cpos</span><span class="o">.</span><span class="n">visual_column</span> <span class="o">-</span> <span class="n">fpos</span><span class="o">.</span><span class="n">visual_column</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">absolute_position</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StreamPosition</span><span class="p">:</span>
+<div class="viewcode-block" id="IndentedCharacterStream.absolute_position"><a class="viewcode-back" href="../../API/streams.html#Streams.IndentedCharacterStream.IndentedCharacterStream.absolute_position">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current absolute position (the position of the current character in the parent stream).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">absolute_position</span>
+
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span></div></div>
+    <span class="kn">from</span> <span class="nn">Streams</span> <span class="kn">import</span> <span class="n">StringStream</span><span class="p">,</span> <span class="n">StreamPosition</span>
+
+    <span class="n">string</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">a b</span>
+<span class="s">    c d</span>
+
+
+<span class="s">    e f</span>
+<span class="s">g h</span>
+<span class="s">&quot;&quot;&quot;</span>
+    <span class="n">pstream</span> <span class="o">=</span> <span class="n">StringStream</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
+    <span class="kn">import</span> <span class="nn">random</span>
+
+
+    <span class="n">istream</span> <span class="o">=</span> <span class="n">IndentedCharacterStream</span><span class="p">(</span><span class="n">pstream</span><span class="p">)</span>
+
+    <span class="n">eof1</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">rpos</span> <span class="o">=</span> <span class="n">istream</span><span class="o">.</span><span class="n">copy_position</span><span class="p">()</span>
+        <span class="n">apos</span> <span class="o">=</span> <span class="n">istream</span><span class="o">.</span><span class="n">copy_absolute_position</span><span class="p">()</span>
+        <span class="n">char</span> <span class="o">=</span> <span class="n">istream</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s">&#39;c&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">istream</span><span class="o">.</span><span class="n">_stack</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">istream</span><span class="o">.</span><span class="n">unread</span><span class="p">()</span>
+            <span class="n">istream</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;#&quot;</span><span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="s">&quot;   PUSH   &quot;</span> <span class="o">+</span> <span class="s">&quot;#&quot;</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="n">EOF</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">eof1</span><span class="p">:</span>
+                <span class="n">eof1</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">istream</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;#&quot;</span><span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="s">&quot;   POP   &quot;</span> <span class="o">+</span> <span class="s">&quot;#&quot;</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;#&quot;</span><span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="s">&quot;   EOF   &quot;</span> <span class="o">+</span> <span class="s">&quot;#&quot;</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
+                <span class="k">break</span>
+
+
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;char </span><span class="si">%s</span><span class="s">: abs</span><span class="si">%s</span><span class="s">  rel</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">char</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="n">apos</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="n">rpos</span><span class="o">.</span><span class="n">values</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">unreadcount</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">istream</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">unreadcount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;#&quot;</span><span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="s">&quot;   UNREAD </span><span class="si">%d</span><span class="s">  &quot;</span> <span class="o">%</span> <span class="n">unreadcount</span> <span class="o">+</span> <span class="s">&quot;#&quot;</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
+                <span class="n">istream</span><span class="o">.</span><span class="n">unread</span><span class="p">(</span><span class="n">unreadcount</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bruno Loff.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

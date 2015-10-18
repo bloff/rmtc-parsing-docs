@@ -1,0 +1,501 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Streams &mdash; rmtc-parsing 0.1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="rmtc-parsing 0.1.1 documentation" href="../index.html"/>
+        <link rel="next" title="Syntax" href="syntax.html"/>
+        <link rel="prev" title="Common" href="common.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> rmtc-parsing
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="common.html">Common</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Streams</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#characterstream">CharacterStream</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#filestream">FileStream</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stringstream">StringStream</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#streamposition">StreamPosition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#streamrange">StreamRange</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#indentedcharacterstream">IndentedCharacterStream</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="syntax.html">Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tokenization.html">Tokenization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transducers.html">Transducers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsers.html">Parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">rmtc-parsing</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Streams</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+          <a href="../_sources/API/streams.txt" rel="nofollow"> View page source</a>
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="streams">
+<span id="streams-modules"></span><h1>Streams<a class="headerlink" href="#streams" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="characterstream">
+<span id="id1"></span><h2>CharacterStream<a class="headerlink" href="#characterstream" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Streams.CharacterStream"></span><dl class="exception">
+<dt id="Streams.CharacterStream.WrongSeqError">
+<em class="property">exception </em><tt class="descname">WrongSeqError</tt><a class="reference internal" href="../_modules/Streams/CharacterStream.html#WrongSeqError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.WrongSeqError" title="Permalink to this definition">¶</a></dt>
+<dd><p>This error is raised if, when trying to unread a certain sequence of characters,</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Streams.CharacterStream.CharacterStream">
+<em class="property">class </em><tt class="descname">CharacterStream</tt><big>(</big><em>name=None</em><big>)</big><a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream" title="Permalink to this definition">¶</a></dt>
+<dd><p>An object from which characters can be <a class="reference internal" href="#Streams.CharacterStream.CharacterStream.read" title="Streams.CharacterStream.CharacterStream.read"><tt class="xref py py-meth docutils literal">read()</tt></a>, <a class="reference internal" href="#Streams.CharacterStream.CharacterStream.unread" title="Streams.CharacterStream.CharacterStream.unread"><tt class="xref py py-meth docutils literal">unread()</tt></a>, and so on.</p>
+<dl class="method">
+<dt id="Streams.CharacterStream.CharacterStream.read">
+<tt class="descname">read</tt><big>(</big><big>)</big> &rarr; str<a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a character from the stream.
+:return: The character that was read.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Streams.CharacterStream.CharacterStream.unread">
+<tt class="descname">unread</tt><big>(</big><em>n: int=1</em><big>)</big> &rarr; str<a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.unread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.unread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unreads a character from a stream.
+:param n: The number of characters to unread.
+:return: The string which was unread.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Streams.CharacterStream.CharacterStream.unread_seq">
+<tt class="descname">unread_seq</tt><big>(</big><em>seq: str</em><big>)</big><a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.unread_seq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.unread_seq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unreads a character from a stream.
+:param seq: The sequence of characters to unread.
+:return: The string which was unread.
+:raises WrongSeqError when the sequence that was unread does not match the given string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Streams.CharacterStream.CharacterStream.peek">
+<tt class="descname">peek</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.peek"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.peek" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the character that the stream will read next. Or EOF if it is the end of file.
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Streams.CharacterStream.CharacterStream.prev">
+<tt class="descname">prev</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.prev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.prev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the character that was read previously.
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Streams.CharacterStream.CharacterStream.next_is_EOF">
+<tt class="descname">next_is_EOF</tt><big>(</big><big>)</big> &rarr; bool<a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.next_is_EOF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.next_is_EOF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether the next call to read() will produce EOF.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Streams.CharacterStream.CharacterStream.prev_is_EOF">
+<tt class="descname">prev_is_EOF</tt><big>(</big><big>)</big> &rarr; bool<a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.prev_is_EOF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.prev_is_EOF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether the last call to read() has produced EOF.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Streams.CharacterStream.CharacterStream.position">
+<tt class="descname">position</tt><a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a StreamPosition instance representing the current (relative) position of the stream. This should be read-only.
+If you want a position that you can keep and modify yourself, use the copy_position method.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Streams.CharacterStream.CharacterStream.absolute_position">
+<tt class="descname">absolute_position</tt><a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.absolute_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.absolute_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a StreamPosition instance representing the current absolute position of the stream. This should be read-only.
+If you want a position that you can keep and modify yourself, use the copy_position method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Streams.CharacterStream.CharacterStream.position_of_unread">
+<tt class="descname">position_of_unread</tt><big>(</big><em>n: int=1</em><big>)</big> &rarr; Streams.StreamPosition.StreamPosition<a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.position_of_unread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.position_of_unread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the StreamPosition instance representing the relative position of the stream after unreading
+<code class="docutils literal highlight highlight-python"><span class="n">n</span></code> characters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Streams.CharacterStream.CharacterStream.position_of_unread_seq">
+<tt class="descname">position_of_unread_seq</tt><big>(</big><em>seq: str</em><big>)</big> &rarr; Streams.StreamPosition.StreamPosition<a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.position_of_unread_seq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.position_of_unread_seq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the StreamPosition instance representing the relative position of the stream after unreading
+the sequence of characters <code class="docutils literal highlight highlight-python"><span class="n">seq</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Streams.CharacterStream.CharacterStream.absolute_position_of_unread">
+<tt class="descname">absolute_position_of_unread</tt><big>(</big><em>n: int=1</em><big>)</big> &rarr; Streams.StreamPosition.StreamPosition<a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.absolute_position_of_unread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.absolute_position_of_unread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the StreamPosition instance representing the absolute position of the stream after unreading
+<code class="docutils literal highlight highlight-python"><span class="n">n</span></code> characters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Streams.CharacterStream.CharacterStream.absolute_position_of_unread_seq">
+<tt class="descname">absolute_position_of_unread_seq</tt><big>(</big><em>seq: str</em><big>)</big> &rarr; Streams.StreamPosition.StreamPosition<a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.absolute_position_of_unread_seq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.absolute_position_of_unread_seq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the StreamPosition instance representing the absolute position of the stream after unreading
+the sequence of characters <code class="docutils literal highlight highlight-python"><span class="n">seq</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Streams.CharacterStream.CharacterStream.copy_position">
+<tt class="descname">copy_position</tt><big>(</big><big>)</big> &rarr; Streams.StreamPosition.StreamPosition<a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.copy_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.copy_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a fresh copy of a StreamPosition instance representing the current (relative) position of the stream.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Streams.CharacterStream.CharacterStream.copy_absolute_position">
+<tt class="descname">copy_absolute_position</tt><big>(</big><big>)</big> &rarr; Streams.StreamPosition.StreamPosition<a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.copy_absolute_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.copy_absolute_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a fresh copy of a StreamPosition instance representing the current absolute position of the stream.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Streams.CharacterStream.CharacterStream.index">
+<tt class="descname">index</tt><a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the index (or &#8216;offset from start&#8217;) of the current position of the stream.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Streams.CharacterStream.CharacterStream.line">
+<tt class="descname">line</tt><a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the line number of the current position of the stream.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Streams.CharacterStream.CharacterStream.column">
+<tt class="descname">column</tt><a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.column"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the column number of the current position of the stream.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Streams.CharacterStream.CharacterStream.visual_column">
+<tt class="descname">visual_column</tt><a class="reference internal" href="../_modules/Streams/CharacterStream.html#CharacterStream.visual_column"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.CharacterStream.CharacterStream.visual_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the visual-column number of the current position of the stream.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="filestream">
+<span id="id2"></span><h2>FileStream<a class="headerlink" href="#filestream" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Streams.FileStream"></span></div>
+<div class="section" id="stringstream">
+<span id="id3"></span><h2>StringStream<a class="headerlink" href="#stringstream" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Streams.StringStream"></span></div>
+<div class="section" id="streamposition">
+<span id="id4"></span><h2>StreamPosition<a class="headerlink" href="#streamposition" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Streams.StreamPosition"></span><dl class="class">
+<dt id="Streams.StreamPosition.StreamPosition">
+<em class="property">class </em><tt class="descname">StreamPosition</tt><big>(</big><em>stream_name: str</em>, <em>*args</em><big>)</big><a class="reference internal" href="../_modules/Streams/StreamPosition.html#StreamPosition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.StreamPosition.StreamPosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class representing a position in a stream.</p>
+<dl class="attribute">
+<dt id="Streams.StreamPosition.StreamPosition.stream_name">
+<tt class="descname">stream_name</tt><em class="property"> = None</em><a class="headerlink" href="#Streams.StreamPosition.StreamPosition.stream_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the stream.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Streams.StreamPosition.StreamPosition.index">
+<tt class="descname">index</tt><em class="property"> = None</em><a class="headerlink" href="#Streams.StreamPosition.StreamPosition.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of characters between the start of the stream and the position.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Streams.StreamPosition.StreamPosition.line">
+<tt class="descname">line</tt><em class="property"> = None</em><a class="headerlink" href="#Streams.StreamPosition.StreamPosition.line" title="Permalink to this definition">¶</a></dt>
+<dd><p>The line number of the position.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Streams.StreamPosition.StreamPosition.column">
+<tt class="descname">column</tt><em class="property"> = None</em><a class="headerlink" href="#Streams.StreamPosition.StreamPosition.column" title="Permalink to this definition">¶</a></dt>
+<dd><p>The column number of the position.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Streams.StreamPosition.StreamPosition.visual_column">
+<tt class="descname">visual_column</tt><em class="property"> = None</em><a class="headerlink" href="#Streams.StreamPosition.StreamPosition.visual_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>The visual-column number of the position (for variable-width characters, this might be different of the column number).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="streamrange">
+<span id="id5"></span><h2>StreamRange<a class="headerlink" href="#streamrange" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Streams.StreamRange"></span><dl class="class">
+<dt id="Streams.StreamRange.StreamRange">
+<em class="property">class </em><tt class="descname">StreamRange</tt><big>(</big><em>first_position: Streams.StreamPosition.StreamPosition=None</em>, <em>position_after: Streams.StreamPosition.StreamPosition=None</em><big>)</big><a class="reference internal" href="../_modules/Streams/StreamRange.html#StreamRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.StreamRange.StreamRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a contiguous interval in a stream.</p>
+<dl class="attribute">
+<dt id="Streams.StreamRange.StreamRange.first_position">
+<tt class="descname">first_position</tt><em class="property"> = None</em><a class="headerlink" href="#Streams.StreamRange.StreamRange.first_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>The position of the first character in the range.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Streams.StreamRange.StreamRange.position_after">
+<tt class="descname">position_after</tt><em class="property"> = None</em><a class="headerlink" href="#Streams.StreamRange.StreamRange.position_after" title="Permalink to this definition">¶</a></dt>
+<dd><p>The position of the character immediately after the last character of the range. Equal to first_position if the range has length 0.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="indentedcharacterstream">
+<span id="id6"></span><h2>IndentedCharacterStream<a class="headerlink" href="#indentedcharacterstream" title="Permalink to this headline">¶</a></h2>
+<p>Supose one was reading the following sequence of
+characters, and did a <code class="docutils literal highlight highlight-python"><span class="n">push</span></code> operation on the <code class="docutils literal highlight highlight-python"><span class="n">u</span></code> character
+(meaning, at the point where the next <code class="docutils literal highlight highlight-python"><span class="n">read</span></code> instruction would
+return the <code class="docutils literal highlight highlight-python"><span class="n">u</span></code> character):</p>
+<div class="highlight-python"><div class="highlight"><pre>a b u
+    v w
+      x y
+    z
+c d
+</pre></div>
+</div>
+<p>Then what happens is that any subsequent call to read will skip all
+the whitespace characters before the column number of the <code class="docutils literal highlight highlight-python"><span class="n">u</span></code>
+character (column 5 in this case). The stream will return all
+remaining characters (at column 5 or after) up to (but excluding) the
+newline character that precedes a line having a non-whitespace
+character before column 5. At that point the stream returns EOF.</p>
+<p>So in this case, subsequent calls to read would return <code class="docutils literal highlight highlight-python"><span class="s">&#39;v&#39;</span></code>,
+<code class="docutils literal highlight highlight-python"><span class="s">&#39; &#39;</span></code>, <code class="docutils literal highlight highlight-python"><span class="s">&#39;w&#39;</span></code>, <code class="docutils literal highlight highlight-python"><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span></code>, <code class="docutils literal highlight highlight-python"><span class="s">&#39; &#39;</span></code>. <code class="docutils literal highlight highlight-python"><span class="s">&#39; &#39;</span></code>, <code class="docutils literal highlight highlight-python"><span class="s">&#39;x&#39;</span></code>, <code class="docutils literal highlight highlight-python"><span class="s">&#39; &#39;</span></code>,
+<code class="docutils literal highlight highlight-python"><span class="s">&#39;y&#39;</span></code>, <code class="docutils literal highlight highlight-python"><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span></code>, <code class="docutils literal highlight highlight-python"><span class="s">&#39;z&#39;</span></code>, <code class="docutils literal highlight highlight-python"><span class="n">EOF</span></code>. At that point, a subsequent call
+to read would produce an error.</p>
+<p>Reading can only continue, then, after the <code class="docutils literal highlight highlight-python"><span class="n">pop</span></code> instruction.
+This would now produce <code class="docutils literal highlight highlight-python"><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span></code>, <code class="docutils literal highlight highlight-python"><span class="s">&#39;c&#39;</span></code>, <code class="docutils literal highlight highlight-python"><span class="s">&#39; &#39;</span></code>, <code class="docutils literal highlight highlight-python"><span class="s">&#39;d&#39;</span></code>.</p>
+<p>If one were to call push again on the <code class="docutils literal highlight highlight-python"><span class="s">&#39;w&#39;</span></code> character, the
+sequences would be</p>
+<div class="highlight-python"><div class="highlight"><pre>&#39;a&#39;, &#39; &#39;, &#39;b&#39;, &#39; &#39;,
+(PUSH) &#39;u&#39;, &#39;\n&#39;, &#39;v&#39;, &#39; &#39;,
+(PUSH) &#39;w&#39;, &#39;\n&#39;, &#39;x&#39;, &#39; &#39;, &#39;y&#39;
+(POP)  &#39;\n&#39;, &#39;z&#39;
+(POP)  &#39;\n&#39;, &#39;c&#39;, &#39; &#39;, &#39;d&#39;
+</pre></div>
+</div>
+<span class="target" id="module-Streams.IndentedCharacterStream"></span><dl class="class">
+<dt id="Streams.IndentedCharacterStream.IndentedCharacterStream">
+<em class="property">class </em><tt class="descname">IndentedCharacterStream</tt><big>(</big><em>parent: Streams.CharacterStream.CharacterStream</em><big>)</big><a class="reference internal" href="../_modules/Streams/IndentedCharacterStream.html#IndentedCharacterStream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.IndentedCharacterStream.IndentedCharacterStream" title="Permalink to this definition">¶</a></dt>
+<dd><p>A character stream for parsing with indentation by ignoring leading whitespace.</p>
+<dl class="method">
+<dt id="Streams.IndentedCharacterStream.IndentedCharacterStream.unread">
+<tt class="descname">unread</tt><big>(</big><em>n: int=1</em><big>)</big> &rarr; str<a class="reference internal" href="../_modules/Streams/IndentedCharacterStream.html#IndentedCharacterStream.unread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.IndentedCharacterStream.IndentedCharacterStream.unread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unreads characters from the current substream. Raises an error if an attempt is made
+at unreading beyond the beginning.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>n</strong> (<em>int</em>) &#8211; The number of characters to unread.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Streams.IndentedCharacterStream.IndentedCharacterStream.read">
+<tt class="descname">read</tt><big>(</big><big>)</big> &rarr; str<a class="reference internal" href="../_modules/Streams/IndentedCharacterStream.html#IndentedCharacterStream.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.IndentedCharacterStream.IndentedCharacterStream.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the next character of the current substream. Raises an error if an attempt is made at reading beyond the EOF.</p>
+<p>:rtype : str
+:returns The next character in the current substream, or EOF if there are no more characters.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Streams.IndentedCharacterStream.IndentedCharacterStream.position">
+<tt class="descname">position</tt><a class="reference internal" href="../_modules/Streams/IndentedCharacterStream.html#IndentedCharacterStream.position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.IndentedCharacterStream.IndentedCharacterStream.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current relative position (the position relative to the last <code class="docutils literal highlight highlight-python"><span class="n">push</span></code> operation).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Streams.IndentedCharacterStream.IndentedCharacterStream.absolute_position">
+<tt class="descname">absolute_position</tt><a class="reference internal" href="../_modules/Streams/IndentedCharacterStream.html#IndentedCharacterStream.absolute_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Streams.IndentedCharacterStream.IndentedCharacterStream.absolute_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current absolute position (the position of the current character in the parent stream).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="syntax.html" class="btn btn-neutral float-right" title="Syntax" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="common.html" class="btn btn-neutral" title="Common" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bruno Loff.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

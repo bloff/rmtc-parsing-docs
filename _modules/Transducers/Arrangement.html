@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Transducers.Arrangement &mdash; rmtc-parsing 0.1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="rmtc-parsing 0.1.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> rmtc-parsing
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../API/common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/streams.html">Streams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/syntax.html">Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/tokenization.html">Tokenization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/transducers.html">Transducers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/parsers.html">Parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">rmtc-parsing</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+        <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>Transducers.Arrangement</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Transducers.Arrangement</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">Common.StringStuff</span> <span class="kn">import</span> <span class="n">indent_string</span>
+<span class="kn">from</span> <span class="nn">Syntax.__exports__</span> <span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Code</span><span class="p">,</span> <span class="n">Identifier</span>
+<span class="kn">from</span> <span class="nn">Syntax.LispPrinter</span> <span class="kn">import</span> <span class="n">lisp_printer</span>
+<span class="kn">import</span> <span class="nn">Common.Options</span> <span class="kn">as</span> <span class="nn">Options</span>
+<span class="kn">from</span> <span class="nn">Transducers.ReadDirection</span> <span class="kn">import</span> <span class="n">ReadDirection</span>
+
+
+<div class="viewcode-block" id="Arrangement"><a class="viewcode-back" href="../../API/transducers.html#Transducers.Arrangement.Arrangement">[docs]</a><span class="k">class</span> <span class="nc">Arrangement</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An arrangement is defined by a list of arrangement rules (:ref:`ArrangementRule`). It traverses a single node from</span>
+<span class="sd">    left-to-right or right-to-left. For each child of the node, for each arrangement rule, it checks if the rule is applicable,</span>
+<span class="sd">    and, if so, applies it to transform the node at that child.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rules</span><span class="p">:</span><span class="nb">list</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span><span class="n">ReadDirection</span> <span class="o">=</span> <span class="n">ReadDirection</span><span class="o">.</span><span class="n">LEFT_TO_RIGHT</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">=</span> <span class="n">rules</span>
+        <span class="sd">&quot;&quot;&quot;A list of arrangement rules.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="n">direction</span>
+        <span class="sd">&quot;&quot;&quot;Whether the node should be left from left-to-right or from right-to-left.&quot;&quot;&quot;</span>
+
+    <span class="c"># given a form h(a b c ...), arrange goes through its elements</span>
+    <span class="c"># and for each element it checks if one of the rules in the list of ArrangementRules apply; if it does, then it is applied</span>
+    <span class="c"># the application of the rule returns the next element to be scanned</span>
+    <span class="c"># if no rule applies, the next element scanned is either the next or previous element (given by element.next and element.prev)</span>
+    <span class="c"># (depending on the &quot;direction&quot; being LEFT_TO_RIGHT or RIGHT_TO_LEFT)</span>
+    <span class="k">def</span> <span class="nf">arrange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span><span class="n">Code</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="n">element</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">ReadDirection</span><span class="o">.</span><span class="n">LEFT_TO_RIGHT</span><span class="p">:</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">first</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">ReadDirection</span><span class="o">.</span><span class="n">RIGHT_TO_LEFT</span><span class="p">:</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">last</span>
+
+        <span class="k">while</span> <span class="n">element</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">nxt</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">ReadDirection</span><span class="o">.</span><span class="n">LEFT_TO_RIGHT</span> <span class="k">else</span> <span class="n">element</span><span class="o">.</span><span class="n">prev</span>
+
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">applies</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+
+                    <span class="c">#region Debug Printing</span>
+                    <span class="k">if</span> <span class="n">Options</span><span class="o">.</span><span class="n">PRINT_ARRANGEMENT_OUTPUTS</span><span class="p">:</span>
+                        <span class="n">node</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">Identifier</span><span class="p">(</span><span class="s">&quot;⋅&quot;</span><span class="p">))</span>
+                        <span class="n">out</span> <span class="o">=</span><span class="s">&quot;        Arrangement: &quot;</span> <span class="o">+</span> <span class="n">r</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+                        <span class="n">out</span> <span class="o">+=</span> <span class="n">indent_string</span><span class="p">(</span><span class="s">&quot;BEFORE:&quot;</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+                        <span class="n">out</span> <span class="o">+=</span> <span class="n">indent_string</span><span class="p">(</span><span class="n">lisp_printer</span><span class="p">(</span><span class="n">node</span><span class="p">),</span> <span class="mi">20</span><span class="p">)</span>
+                        <span class="k">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+                        <span class="n">node</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">next</span><span class="p">)</span>
+                    <span class="c">#endregion</span>
+
+                    <span class="n">nxt</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+
+                    <span class="c"># region Debug Printing</span>
+                    <span class="k">if</span> <span class="n">Options</span><span class="o">.</span><span class="n">PRINT_ARRANGEMENT_OUTPUTS</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">nxt</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                            <span class="n">node</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">last</span><span class="p">,</span> <span class="n">Identifier</span><span class="p">(</span><span class="s">&quot;⋅&quot;</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">node</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">nxt</span><span class="p">,</span> <span class="n">Identifier</span><span class="p">(</span><span class="s">&quot;⋅&quot;</span><span class="p">))</span>
+                        <span class="n">out</span> <span class="o">=</span> <span class="n">indent_string</span><span class="p">(</span><span class="s">&quot;After:&quot;</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+                        <span class="n">out</span> <span class="o">+=</span> <span class="n">indent_string</span><span class="p">(</span><span class="n">lisp_printer</span><span class="p">(</span><span class="n">node</span><span class="p">),</span> <span class="mi">20</span><span class="p">)</span>
+                        <span class="k">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">nxt</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                            <span class="n">node</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">last</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">node</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">nxt</span><span class="o">.</span><span class="n">next</span><span class="p">)</span>
+                    <span class="c"># endregion</span>
+                    <span class="k">break</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="n">nxt</span>
+
+
+<span class="c"># def surrounding_elements_code(element, distance_before, distance_after = 0):</span>
+<span class="c">#     l = []</span>
+<span class="c">#     e = element.prev</span>
+<span class="c">#     while distance_before &gt; 0 and e is not None:</span>
+<span class="c">#         l.append(e.code)</span>
+<span class="c">#         distance_before -= 1</span>
+<span class="c">#     l.reverse()</span>
+<span class="c">#     e = element.next</span>
+<span class="c">#     while distance_after &gt; 0 and e is not None:</span>
+<span class="c">#         l.append(e.code)</span>
+<span class="c">#         distance_after -= 1</span>
+<span class="c">#     return l if len(l) &gt; 1 else l[0] if len(l) == 1 else None</span>
+</pre></div></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bruno Loff.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

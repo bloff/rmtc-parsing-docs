@@ -1,0 +1,374 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Readtable-Macro Transducer-Chain Parsing &mdash; rmtc-parsing 0.1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="rmtc-parsing 0.1.1 documentation" href="#"/>
+        <link rel="next" title="Common" href="API/common.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> rmtc-parsing
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="API/common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="API/streams.html">Streams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="API/syntax.html">Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="API/tokenization.html">Tokenization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="API/transducers.html">Transducers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="API/parsers.html">Parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">rmtc-parsing</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="#">Docs</a> &raquo;</li>
+      
+    <li>Readtable-Macro Transducer-Chain Parsing</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+          <a href="_sources/index.txt" rel="nofollow"> View page source</a>
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="readtable-macro-transducer-chain-parsing">
+<h1>Readtable-Macro Transducer-Chain Parsing<a class="headerlink" href="#readtable-macro-transducer-chain-parsing" title="Permalink to this headline">¶</a></h1>
+<p>This repository contains an implementation of a framework for using the
+readtable-macro transducer-chain (RMTS) parsing method.</p>
+<p>This is described in the following three blog posts:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://bloff.github.io/lyc/2015/08/02/lexer.html">Lexing I: the off-side
+rule</a></li>
+<li><a class="reference external" href="https://bloff.github.io/lyc/lexing,/syntax/2015/08/30/lexer-2.html">Lexing II: readtable–macro
+parsing</a></li>
+<li><a class="reference external" href="http://bloff.github.io/lyc/blog/drafts.html">Parsing via chains of tree-transducers</a>
+(yet to be written)</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You may jump to the full <a class="reference internal" href="#table-of-contents">Table of contents</a> below. Following is an overview of the source code.</p>
+</div>
+</div>
+<div class="section" id="structure-of-the-source-code">
+<h1>Structure of the source code<a class="headerlink" href="#structure-of-the-source-code" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="common">
+<h2><a class="reference internal" href="API/common.html#common-modules"><em>Common</em></a><a class="headerlink" href="#common" title="Permalink to this headline">¶</a></h2>
+<p>Several utilities used throughout the project.</p>
+<ul class="simple">
+<li><strong>Context</strong> - A python class to simulate variables with dynamic scope
+(Lisp&#8217;s <em>special variables</em>).</li>
+<li><strong>Errors</strong> - A collection of exceptions.</li>
+<li><strong>Record</strong> - A python dict accessible via <strong>getattr</strong>/<strong>setattr</strong> (so
+one can write <code class="docutils literal highlight highlight-python"><span class="n">record</span><span class="o">.</span><span class="n">item</span></code> instead of <code class="docutils literal highlight highlight-python"><span class="n">record</span><span class="p">[</span><span class="s">&quot;item&quot;</span><span class="p">]</span></code>).</li>
+<li><strong>StringStuff</strong> - Some functions to manipulate strings, and
+information about characters with non-single-space width.</li>
+<li><strong>SysArgsParser</strong> - A utility to parse command line arguments.</li>
+<li><strong>Util</strong> - General utility functions.</li>
+<li>Unused by this project, needs to be refactored/moved:<ul>
+<li><strong>Hierarchy</strong></li>
+<li><strong>Instance</strong></li>
+<li><strong>Memoize</strong></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="streams">
+<h2><a class="reference internal" href="API/streams.html#streams-modules"><em>Streams</em></a><a class="headerlink" href="#streams" title="Permalink to this headline">¶</a></h2>
+<p>Self-contained implementation of an object from which characters can be
+read, while keeping track of offset, and line and column numbers.
+This probably should be replaced with Python&#8217;s own
+<em>TextIOBase</em> class. But it was much simpler for me to just have a class
+with exactly what I needed, instead of worrying about implementing
+whatever Python needs. Will refactor this at some point.</p>
+<ul class="simple">
+<li><a class="reference internal" href="API/streams.html#characterstream"><em>CharacterStream</em></a> - Is the base class.</li>
+<li><a class="reference internal" href="API/streams.html#filestream"><em>FileStream</em></a> - Implementation to read from a file.</li>
+<li><a class="reference internal" href="API/streams.html#stringstream"><em>StringStream</em></a> - Implementation to read from a String.</li>
+<li><a class="reference internal" href="API/streams.html#streamposition"><em>StreamPosition</em></a>, <a class="reference internal" href="API/streams.html#streamrange"><em>StreamRange</em></a> - For describing a position in a
+stream, or a range of positions.</li>
+<li><a class="reference internal" href="API/streams.html#indentedcharacterstream"><em>IndentedCharacterStream</em></a> - This one allows for <code class="docutils literal highlight highlight-python"><span class="n">push</span></code> and
+<code class="docutils literal highlight highlight-python"><span class="n">pop</span></code> operations. This is how we parse indentation in
+a recursive descent parser.</li>
+</ul>
+</div>
+<div class="section" id="syntax">
+<h2><a class="reference internal" href="API/syntax.html#syntax-modules"><em>Syntax</em></a><a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
+<p>Syntax types.</p>
+<ul class="simple">
+<li><a class="reference internal" href="API/syntax.html#code"><em>Code</em></a> - The base class for all syntax types.</li>
+<li><a class="reference internal" href="API/syntax.html#identifier"><em>Identifier</em></a> - An identifier.</li>
+<li><a class="reference internal" href="API/syntax.html#literal"><em>Literal</em></a> - A Literal.</li>
+<li><a class="reference internal" href="API/syntax.html#node"><em>Node</em></a> and <a class="reference internal" href="API/syntax.html#element"><em>Element</em></a> - A <em>Node</em> is a doubly-linked list, where each <em>Element</em> in the list holds
+(a reference to) an instance of <em>Code</em>. Currently we define 6 types of nodes:<ul>
+<li><a class="reference internal" href="API/syntax.html#form"><em>Form</em></a> - A Form denotes a Node where the first element is singled out, and called the <em>head</em> of the form.
+It is usually understood that the first element is <em>applied</em> to the remaining elements, called <em>arguments</em> of the form.
+One may denote a Form by <code class="docutils literal highlight highlight-python"><span class="n">head</span><span class="p">(</span> <span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span></code> or <code class="docutils literal highlight highlight-python">⦅head arg1 arg2 ...⦆</code>.</li>
+<li><a class="reference internal" href="API/syntax.html#tuple"><em>Tuple</em></a> - A Tuple is a Node where no element is singled out. It usually represents a sequence of elements, taken
+together.
+One may denote a Tuple by <code class="docutils literal highlight highlight-python"><span class="p">(</span><span class="n">elm1</span><span class="p">,</span> <span class="n">elm2</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span></code>.</li>
+<li><a class="reference internal" href="API/syntax.html#preform"><em>PreForm</em></a> and <a class="reference internal" href="API/syntax.html#pretuple"><em>PreTuple</em></a> - A PreForm or a PreTuple denotes a Form or a Tuple, respectively, if it holds
+two or more elements appear, or, if there is a single element, denotes that very same single element.
+One may denote a PreForm by <code class="docutils literal highlight highlight-python">ₐ⟅elm1 ...⟆ₐ</code>, and a PreTuple by <code class="docutils literal highlight highlight-python">⟅elm1 ...⟆</code>.</li>
+<li><a class="reference internal" href="API/syntax.html#punctuator"><em>Punctuator</em></a> - A Node whose single element should be parsed for punctuation.</li>
+</ul>
+</li>
+<li><a class="reference internal" href="API/syntax.html#nodeiterator"><em>NodeIterator</em></a> - An iterator for iterating over the elements of a Node.</li>
+<li><a class="reference internal" href="API/syntax.html#token"><em>Token</em></a> - An Element representing a token. The outcome of tokenization should be a single Node instance whose
+elements are all Tokens.</li>
+<li><a class="reference internal" href="API/syntax.html#lispprinter"><em>LispPrinter</em></a> - A collection of functions for printing Code using S-Expressions (Lisp prefix notation).</li>
+</ul>
+</div>
+<div class="section" id="tokenization">
+<h2><a class="reference internal" href="API/tokenization.html#tokenization-modules"><em>Tokenization</em></a><a class="headerlink" href="#tokenization" title="Permalink to this headline">¶</a></h2>
+<p>Readtable-macro parsing.</p>
+<ul class="simple">
+<li><a class="reference internal" href="API/tokenization.html#readtable"><em>Readtable</em></a> - Readtables map sequence of characters to dictionaries of properties.</li>
+<li><a class="reference internal" href="API/tokenization.html#tokenizationcontext"><em>TokenizationContext</em></a></li>
+<li><a class="reference internal" href="API/tokenization.html#tokenizer"><em>Tokenizer</em></a> - A tokenizer generates tokens (<a class="reference internal" href="API/syntax.html#token"><em>Token</em></a>) from a <a class="reference internal" href="API/streams.html#characterstream"><em>CharacterStream</em></a>.</li>
+<li><a class="reference internal" href="API/tokenization.html#indentationreadtabletokenizer"><em>IndentationReadtableTokenizer</em></a> - A tokenizer that uses a readtable to read indented blocks of code.</li>
+<li><a class="reference internal" href="API/tokenization.html#delimitertokenizer"><em>DelimiterTokenizer</em></a> - Tokenizer for parsing blocks of code surrounded by delimiters.</li>
+<li><a class="reference internal" href="API/tokenization.html#stringtokenizer"><em>StringTokenizer</em></a> - Tokenizer for strings with interpolated code.</li>
+<li><a class="reference internal" href="API/tokenization.html#commenttokenizer"><em>CommentTokenizer</em></a> -  Tokenizer for comments with interpolated code.</li>
+<li><a class="reference internal" href="API/tokenization.html#rawcommenttokenizer"><em>RawCommentTokenizer</em></a> - Comments without interpolated code.</li>
+<li><a class="reference internal" href="API/tokenization.html#delimitedidentifiertokenizer"><em>DelimitedIdentifierTokenizer</em></a> - Tokenizer for identifiers surrounded by delimiters.</li>
+</ul>
+</div>
+<div class="section" id="transducers">
+<h2><a class="reference internal" href="API/transducers.html#transducers-modules"><em>Transducers</em></a><a class="headerlink" href="#transducers" title="Permalink to this headline">¶</a></h2>
+<p>Tree transducers.</p>
+</div>
+<div class="section" id="parsers">
+<h2><a class="reference internal" href="API/parsers.html#parsers-modules"><em>Parsers</em></a><a class="headerlink" href="#parsers" title="Permalink to this headline">¶</a></h2>
+<p>Parsers for specific languages (currently only <code class="docutils literal highlight highlight-python"><span class="n">lyc</span></code>).</p>
+</div>
+</div>
+<div class="section" id="table-of-contents">
+<h1>Table of contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="API/common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="API/streams.html">Streams</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="API/streams.html#characterstream">CharacterStream</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/streams.html#filestream">FileStream</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/streams.html#stringstream">StringStream</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/streams.html#streamposition">StreamPosition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/streams.html#streamrange">StreamRange</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/streams.html#indentedcharacterstream">IndentedCharacterStream</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="API/syntax.html">Syntax</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="API/syntax.html#code">Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/syntax.html#identifier">Identifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/syntax.html#literal">Literal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/syntax.html#element">Element</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/syntax.html#node">Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/syntax.html#form">Form</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/syntax.html#tuple">Tuple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/syntax.html#preform">PreForm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/syntax.html#pretuple">PreTuple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/syntax.html#punctuator">Punctuator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/syntax.html#nodeiterator">NodeIterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/syntax.html#token">Token</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/syntax.html#lispprinter">LispPrinter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="API/tokenization.html">Tokenization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="API/tokenization.html#readtable">Readtable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/tokenization.html#tokenizationcontext">TokenizationContext</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/tokenization.html#tokenizer">Tokenizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/tokenization.html#indentationreadtabletokenizer">IndentationReadtableTokenizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/tokenization.html#delimitertokenizer">DelimiterTokenizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/tokenization.html#stringtokenizer">StringTokenizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/tokenization.html#commenttokenizer">CommentTokenizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/tokenization.html#rawcommenttokenizer">RawCommentTokenizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/tokenization.html#delimitedidentifiertokenizer">DelimitedIdentifierTokenizer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="API/transducers.html">Transducers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="API/transducers.html#arrangement">Arrangement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/transducers.html#arrangementrule">ArrangementRule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/transducers.html#readdirection">ReadDirection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/transducers.html#treetransducer">TreeTransducer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/transducers.html#topdowntreetransducer">TopDownTreeTransducer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/transducers.html#bottomuptreetransducer">BottomUpTreeTransducer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/transducers.html#convertpreforms">ConvertPreForms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/transducers.html#applytorest">ApplyToRest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/transducers.html#block">Block</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/transducers.html#comments">Comments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/transducers.html#constituents">Constituents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="API/transducers.html#defaultpunctuation">DefaultPunctuation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="API/parsers.html">Parsers</a></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="API/common.html" class="btn btn-neutral float-right" title="Common" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bruno Loff.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

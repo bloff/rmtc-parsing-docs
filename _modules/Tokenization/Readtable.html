@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tokenization.Readtable &mdash; rmtc-parsing 0.1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="rmtc-parsing 0.1.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> rmtc-parsing
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../API/common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/streams.html">Streams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/syntax.html">Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/tokenization.html">Tokenization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/transducers.html">Transducers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/parsers.html">Parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">rmtc-parsing</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+        <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>Tokenization.Readtable</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Tokenization.Readtable</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">Common.Record</span> <span class="kn">import</span> <span class="n">Record</span>
+<span class="kn">from</span> <span class="nn">Streams.CharacterStream</span> <span class="kn">import</span> <span class="n">CharacterStream</span>
+
+<div class="viewcode-block" id="RT"><a class="viewcode-back" href="../../API/tokenization.html#Tokenization.Readtable.RT">[docs]</a><span class="k">class</span> <span class="nc">RT</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enum of readtable entry types.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">WHITESPACE</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="sd">&quot;&quot;&quot;A whitespace character sequence.&quot;&quot;&quot;</span>
+    <span class="n">NEWLINE</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="sd">&quot;&quot;&quot;A newline character sequence.&quot;&quot;&quot;</span>
+    <span class="n">ISOLATED_CONSTITUENT</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="sd">&quot;&quot;&quot;A constituent character sequence that should *not* be concatenated with other adjacent constituent sequences.&quot;&quot;&quot;</span>
+    <span class="n">CONSTITUENT</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="sd">&quot;&quot;&quot;A constituent character sequence that *should* be concatenated with other adjacent constituent sequences.&quot;&quot;&quot;</span>
+    <span class="n">MACRO</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="sd">&quot;&quot;&quot;A character sequence that begins a reader macro.&quot;&quot;&quot;</span>
+    <span class="n">INVALID</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="sd">&quot;&quot;&quot;A character sequence that should not appear.&quot;&quot;&quot;</span>
+    <span class="n">CLOSING</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="sd">&quot;&quot;&quot;A character sequence that signals the end of a reader macro.&quot;&quot;&quot;</span>
+    <span class="n">PUNCTUATION</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="sd">&quot;&quot;&quot;A punctuation character sequence.&quot;&quot;&quot;</span>
+</div>
+<div class="viewcode-block" id="Readtable"><a class="viewcode-back" href="../../API/tokenization.html#Tokenization.Readtable.Readtable">[docs]</a><span class="k">class</span> <span class="nc">Readtable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A readtable. It associates certain characters or sequences of characters with a dictionary of so-called *properties* (which could be anything).</span>
+<span class="sd">    For instance, lyc&#39;s readtable associates the sequence :literal:`“` with the properties ``{&#39;type&#39;: RT.MACRO, &#39;tokenizer&#39;: &#39;StringTokenizer&#39;}``,</span>
+<span class="sd">    which should mean that if a :literal:`“` character is found, it signals a reader macro which is to be processed by the tokenizer called</span>
+<span class="sd">    &#39;StringTokenizer&#39;.</span>
+
+<span class="sd">    The table is organized as a prefix tree. Each path in the tree is a sequence in the table. Each node in the tree is</span>
+<span class="sd">    encoded as a dictionary mapping characters to pairs ``[child_node, properties]``. So, for instance, the default lyc readtable</span>
+<span class="sd">    has in its root node a mapping from ``&#39;#&#39;`` to ``[subnode, {&#39;type&#39;: &#39;macro&#39;, &#39;tokenizer&#39;: &#39;CommentTokenizer&#39;}]``, where subnode</span>
+<span class="sd">    has a mapping from ``&#39;#&#39;`` to ``[None, {&#39;type&#39;: &#39;macro&#39;, &#39;tokenizer&#39;:&#39;RawCommentTokenizer&#39;}]``. This means that the ``&#39;#&#39;``</span>
+<span class="sd">    sequence has properties ``{&#39;type&#39;: &#39;macro&#39;, &#39;tokenizer&#39;: &#39;CommentTokenizer&#39;}``, and the &#39;##&#39; sequence has properties</span>
+<span class="sd">    ``{&#39;type&#39;: &#39;macro&#39;, &#39;tokenizer&#39;:&#39;RawCommentTokenizer&#39;}``; it also means that there is no way of extending &#39;##&#39; into a larger</span>
+<span class="sd">    entry of the readtable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_node</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="sd">&quot;&quot;&quot;The root of the prefix tree.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_properties</span> <span class="o">=</span> <span class="n">Record</span><span class="p">({})</span>
+        <span class="sd">&quot;&quot;&quot;This is the property list of sequences of characters that are not entries in the readtable.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_return_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">properties</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">properties</span> <span class="k">if</span> <span class="n">properties</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_properties</span>
+
+
+<div class="viewcode-block" id="Readtable.add_or_upd_seq"><a class="viewcode-back" href="../../API/tokenization.html#Tokenization.Readtable.Readtable.add_or_upd_seq">[docs]</a>    <span class="k">def</span> <span class="nf">add_or_upd_seq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequence</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">properties</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Associates a given sequence of characters with the given properties dictionary,</span>
+<span class="sd">        or updates the associated properties dictionary, if one is already present</span>
+<span class="sd">        :param sequence: The sequence of characters to be entered/updated in the readtable.</span>
+<span class="sd">        :param properties: The associated dictionary of properties.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_node</span>
+        <span class="n">node_properties_pair</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">sequence</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
+                <span class="n">node_properties_pair</span> <span class="o">=</span> <span class="p">[{},</span> <span class="bp">None</span><span class="p">]</span>
+                <span class="n">node</span><span class="p">[</span><span class="n">char</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_properties_pair</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">node_properties_pair</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="n">char</span><span class="p">]</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">node_properties_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">node_properties_pair</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+        <span class="k">assert</span> <span class="n">node_properties_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span>
+        <span class="n">node_properties_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">properties</span>
+
+</div>
+<div class="viewcode-block" id="Readtable.query"><a class="viewcode-back" href="../../API/tokenization.html#Tokenization.Readtable.Readtable.query">[docs]</a>    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Queries an entry in the readtable.</span>
+<span class="sd">        :param seq: The sequence of characters to be queried.</span>
+<span class="sd">        :return: a pair ``(properties, continuation_possible)``, where ``properties`` is the properties associated with</span>
+<span class="sd">        the given sequence (which could be the ``default_properties``), and ``continuation_possible`` is ``True`` iff the</span>
+<span class="sd">        sequence can be extended to some other (longer) sequence in the read-table.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_node</span>
+        <span class="n">node_properties_pair</span> <span class="o">=</span> <span class="p">[{},</span> <span class="bp">None</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_properties</span><span class="p">,</span> <span class="bp">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">node_properties_pair</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="n">char</span><span class="p">]</span>
+                <span class="n">node</span> <span class="o">=</span> <span class="n">node_properties_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_properties</span><span class="p">(</span><span class="n">node_properties_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">continuation_possible</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_properties_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">properties</span><span class="p">,</span> <span class="n">continuation_possible</span>
+
+
+</div>
+<div class="viewcode-block" id="Readtable.probe"><a class="viewcode-back" href="../../API/tokenization.html#Tokenization.Readtable.Readtable.probe">[docs]</a>    <span class="k">def</span> <span class="nf">probe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">:</span><span class="n">CharacterStream</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads a stream one character at a time, as long as the read sequence of characters is an entry of the readtable.</span>
+
+<span class="sd">        :param stream: The stream to be probed.</span>
+<span class="sd">        :return: A pair with the largest possible such sequence and the associated properties.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_node</span>
+        <span class="n">node_properties_pair</span> <span class="o">=</span> <span class="p">[{},</span> <span class="bp">None</span><span class="p">]</span>
+        <span class="n">seq</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">stream</span><span class="o">.</span><span class="n">next_is_EOF</span><span class="p">():</span>
+            <span class="n">char</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
+                <span class="n">seq</span> <span class="o">+=</span> <span class="n">char</span>
+                <span class="n">node_properties_pair</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="n">char</span><span class="p">]</span>
+                <span class="n">node</span> <span class="o">=</span> <span class="n">node_properties_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">seq</span> <span class="o">!=</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
+                    <span class="n">stream</span><span class="o">.</span><span class="n">unread</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="n">seq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_properties</span><span class="p">(</span><span class="n">node_properties_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">char</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_properties</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">seq</span> <span class="o">!=</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">seq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_properties</span><span class="p">(</span><span class="n">node_properties_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="bp">False</span>
+
+</div></div>
+<div class="viewcode-block" id="make_readtable"><a class="viewcode-back" href="../../API/tokenization.html#Tokenization.Readtable.make_readtable">[docs]</a><span class="k">def</span> <span class="nf">make_readtable</span><span class="p">(</span><span class="n">definition</span><span class="p">:</span><span class="nb">list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a new readtable.</span>
+
+<span class="sd">    The parameter ``definition`` should respect the following format::</span>
+
+<span class="sd">        definition := [ entries*, default_entry ]</span>
+
+<span class="sd">        entries := [ type_property_value, seq_or_seqs, other_properties? ]</span>
+
+<span class="sd">        default_entry := [&#39;DEFAULT&#39;, default_properties]</span>
+
+<span class="sd">    ``type_property_value`` is the value associated with the type_property</span>
+
+<span class="sd">    ``seq_or_seqs`` is a string or a list of strings.</span>
+
+<span class="sd">    ``other_properties`` and ``default_properties`` are dictionaries.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">read_table</span> <span class="o">=</span> <span class="n">Readtable</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">definition</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;DEFAULT&#39;</span><span class="p">:</span>
+            <span class="n">read_table</span><span class="o">.</span><span class="n">default_properties</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">seqs</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">properties</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span> <span class="k">else</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">seq</span> <span class="ow">in</span> <span class="n">seqs</span><span class="p">:</span>
+                <span class="n">existing_properties</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">read_table</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">existing_properties</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">read_table</span><span class="o">.</span><span class="n">default_properties</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="n">existing_properties</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">existing_properties</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">properties</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">new_seq_properties</span> <span class="o">=</span> <span class="n">Record</span><span class="p">({</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">]})</span>
+                    <span class="n">new_seq_properties</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">properties</span><span class="p">)</span>
+                    <span class="n">read_table</span><span class="o">.</span><span class="n">add_or_upd_seq</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">new_seq_properties</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">read_table</span>
+</pre></div></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bruno Loff.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

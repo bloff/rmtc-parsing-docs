@@ -1,0 +1,636 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Syntax.Node &mdash; rmtc-parsing 0.1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="rmtc-parsing 0.1.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> rmtc-parsing
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../API/common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/streams.html">Streams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/syntax.html">Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/tokenization.html">Tokenization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/transducers.html">Transducers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/parsers.html">Parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">rmtc-parsing</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+        <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>Syntax.Node</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Syntax.Node</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">Streams.StreamRange</span> <span class="kn">import</span> <span class="n">StreamRange</span>
+<span class="kn">from</span> <span class="nn">Syntax.Code</span> <span class="kn">import</span> <span class="n">Code</span>
+
+
+<div class="viewcode-block" id="Element"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.Element">[docs]</a><span class="k">class</span> <span class="nc">Element</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An element of a Node.</span>
+
+<span class="sd">    :param code_or_element:</span>
+<span class="sd">      If ``code_or_element`` is not an ``Element``, then code_or_element is the code attribute of the new element.</span>
+<span class="sd">      If ``code_or_element`` is an ``Element``, then ``code_or_element``&#39;s ``code`` attribute is the code attribute of the new element.</span>
+<span class="sd">    :param parent: The ``Node`` containing this element.</span>
+<span class="sd">    :param kwargs: Any number of attributes that should be associated with this element.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code_or_element</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">parent</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">Node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="sd">&quot;&quot;&quot;The ``Node`` containing this element.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;The ``Element`` that precedes this element, or ``None`` if this is the first element.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;The ``Element`` that follows this element, or ``None`` if this is the last element.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;The ``Code`` associated with this element. May be ``None``.&quot;&quot;&quot;</span>
+
+
+
+        <span class="k">if</span> <span class="n">code_or_element</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code_or_element</span><span class="p">,</span> <span class="n">Code</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code_or_element</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code_or_element</span><span class="p">,</span> <span class="n">Element</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code_or_element</span><span class="o">.</span><span class="n">code</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_make_new_element</span><span class="p">(</span><span class="n">code_or_element</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code_or_element</span><span class="p">,</span> <span class="n">Code</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Element</span><span class="p">(</span><span class="n">code_or_element</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code_or_element</span><span class="p">,</span> <span class="n">Element</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">code_or_element</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">code_or_element</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+                <span class="k">return</span> <span class="n">code_or_element</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">Element</span><span class="p">(</span><span class="n">code_or_element</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+
+
+<div class="viewcode-block" id="Element.is_last"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.Element.is_last">[docs]</a>    <span class="k">def</span> <span class="nf">is_last</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether this element is the last of its Node. Returns ``False`` if parent is ``None``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">last</span> <span class="ow">is</span> <span class="bp">self</span>
+</div>
+<div class="viewcode-block" id="Element.is_first"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.Element.is_first">[docs]</a>    <span class="k">def</span> <span class="nf">is_first</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether this element is the first of its Node. Returns ``False`` if parent is ``None``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">first</span> <span class="ow">is</span> <span class="bp">self</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Element.number"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.Element.number">[docs]</a>    <span class="k">def</span> <span class="nf">number</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The position of this element in its parent ``Node``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_first</span><span class="p">():</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">prev</span>
+        <span class="k">return</span> <span class="n">i</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Element.range"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.Element.range">[docs]</a>    <span class="k">def</span> <span class="nf">range</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StreamRange</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The range attribute (of ``StreamRange`` type) of this element&#39;s associated ``Code`` instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">range</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&quot;Element(</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&quot;Element()&quot;</span>
+
+</div>
+<div class="viewcode-block" id="NodeIterator"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.NodeIterator">[docs]</a><span class="k">class</span> <span class="nc">NodeIterator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An iterator over the elements of a node. After iterating over some element,</span>
+<span class="sd">    it is OK to change the node up to (and including) that element, but</span>
+<span class="sd">    changing the node after that element might result in unexpected behavior</span>
+<span class="sd">    (the iterator&#39;s behavior becomes undefined).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">first_element</span><span class="p">:</span><span class="n">Element</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">first_element</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">first_element</span><span class="o">.</span><span class="n">next</span> <span class="k">if</span> <span class="n">first_element</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="o">.</span><span class="n">next</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+<div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span> <span class="p">(</span><span class="n">Code</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A doubly-linked list.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># Given a list of elements and/or Code instances, or a sequence of elements and/or Code instances as arguments</span>
+    <span class="c"># creates a node whose elements have the given code instances, and the code instances of the given elements;</span>
+    <span class="c"># e.g., Node(1, 2, elm) has elements: Element.make(1), Element.make(2), Element.make(elm.value)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">children</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">children</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">first</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;The first Element of the doubly-linked list.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;The last Element of the doubly-linked list.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="n">StreamRange</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Code</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Element</span><span class="p">)</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">first</span> <span class="o">=</span> <span class="n">Element</span><span class="o">.</span><span class="n">_make_new_element</span><span class="p">(</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">range</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">children</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">Code</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">Element</span><span class="p">)</span>
+                <span class="n">current</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">Element</span><span class="o">.</span><span class="n">_make_new_element</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+                <span class="n">current</span><span class="o">.</span><span class="n">next</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="n">current</span>
+                <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">next</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">range</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">current</span>
+
+<div class="viewcode-block" id="Node.erase"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.Node.erase">[docs]</a>    <span class="k">def</span> <span class="nf">erase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Empties the entire list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">first</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="Node.prepend"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.Node.prepend">[docs]</a>    <span class="k">def</span> <span class="nf">prepend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">Code</span><span class="p">,</span><span class="n">Element</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds an element to the beginning of this node.</span>
+
+<span class="sd">        :param child: A Code or an Element to be inserted. If ``child`` is an Element whose ``parent`` field is ``None``,</span>
+<span class="sd">          the element will be changed to have this node as its parent.</span>
+
+<span class="sd">        :type child: Code or Element</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">Code</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">Element</span><span class="p">)</span>
+        <span class="n">element</span> <span class="o">=</span> <span class="n">Element</span><span class="o">.</span><span class="n">_make_new_element</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">first</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">first</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">element</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="n">element</span>
+            <span class="n">element</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">first</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">first</span> <span class="o">=</span> <span class="n">element</span>
+</div>
+<div class="viewcode-block" id="Node.append"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.Node.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds an element to the end of this node.</span>
+
+<span class="sd">        :param child: A Code or an Element to be inserted. If ``child`` is an Element whose ``parent`` field is ``None``,</span>
+<span class="sd">          the element will be changed to have this node as its parent.</span>
+
+<span class="sd">        :type child: Code or Element</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">Code</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">Element</span><span class="p">)</span>
+        <span class="n">element</span> <span class="o">=</span> <span class="n">Element</span><span class="o">.</span><span class="n">_make_new_element</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">first</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">first</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">element</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">element</span>
+            <span class="n">element</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">element</span>
+</div>
+<div class="viewcode-block" id="Node.insert"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.Node.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">after_this</span><span class="p">:</span><span class="n">Element</span><span class="p">,</span> <span class="n">child</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inserts a new element after a given element of this node.</span>
+
+<span class="sd">        :param after_this: An Element (whose ``parent`` must be this node) after which</span>
+<span class="sd">           the new element is to be inserted.</span>
+
+<span class="sd">        :type after_this: Element</span>
+
+<span class="sd">        :param child: A Code or an Element to be inserted. If ``child`` is an Element whose ``parent`` field is ``None``,</span>
+<span class="sd">          the element will be changed to have this node as its parent.</span>
+
+<span class="sd">        :type child: Code or Element</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">after_this</span><span class="p">,</span> <span class="n">Element</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">after_this</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">first</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">Code</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">Element</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">after_this</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">first</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">after_this</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="bp">self</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="n">Element</span><span class="o">.</span><span class="n">_make_new_element</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">range</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+            <span class="n">element</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">after_this</span><span class="o">.</span><span class="n">next</span>
+            <span class="n">element</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="n">after_this</span>
+            <span class="k">if</span> <span class="n">after_this</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">after_this</span><span class="o">.</span><span class="n">next</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="n">element</span>
+            <span class="k">else</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">element</span>
+            <span class="n">after_this</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">element</span>
+</div>
+<div class="viewcode-block" id="Node.remove"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.Node.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inserts a new element after a given element of this node.</span>
+
+<span class="sd">        :param element: An Element (whose ``parent`` must be this node) after which</span>
+<span class="sd">           the new element is to be inserted.</span>
+
+<span class="sd">        :type element: Element</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">Element</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">element</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="bp">self</span>
+
+        <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">prev</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">first</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">element</span><span class="o">.</span><span class="n">prev</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span>
+         <span class="c"># if node is the tail</span>
+        <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">prev</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">prev</span>
+        <span class="n">element</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="Node.replace"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.Node.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">new_child</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replacesa given element of this node with a new element.</span>
+
+<span class="sd">        :param element: The element (whose ``parent`` must be this node)</span>
+<span class="sd">            to be replaced.</span>
+
+<span class="sd">        :type element: Element</span>
+
+<span class="sd">        :param new_child: A Code or an Element to be inserted. If ``child`` is an Element whose ``parent`` field is ``None``,</span>
+<span class="sd">          the element will be changed to have this node as its parent.</span>
+
+<span class="sd">        :type new_child: Code or Element</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">Element</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">element</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="bp">self</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_child</span><span class="p">,</span> <span class="n">Code</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_child</span><span class="p">,</span> <span class="n">Element</span><span class="p">)</span>
+        <span class="n">new_element</span> <span class="o">=</span> <span class="n">Element</span><span class="o">.</span><span class="n">_make_new_element</span><span class="p">(</span><span class="n">new_child</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_element</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+        <span class="n">new_element</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span>
+        <span class="n">new_element</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">prev</span>
+        <span class="c"># if c is the head</span>
+        <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">prev</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">first</span> <span class="o">=</span> <span class="n">new_element</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">element</span><span class="o">.</span><span class="n">prev</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">new_element</span>
+         <span class="c"># if c is the tail</span>
+        <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">new_element</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="n">new_element</span>
+        <span class="n">element</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">new_element</span>
+
+    <span class="c"># replaces node in self with the elements of given Node</span>
+    <span class="c"># Destroys the given Node in the process</span>
+    <span class="c"># so (a b c).replace_explode(b, (d e)) = (a d e c), and the (d e) node becomes ()</span></div>
+<div class="viewcode-block" id="Node.replace_explode_modify"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.Node.replace_explode_modify">[docs]</a>    <span class="k">def</span> <span class="nf">replace_explode_modify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replaces a given element of this node with the sequence of elements given by another node.</span>
+
+<span class="sd">        **This operation removes the elements from the given node, and makes this node their parent.**</span>
+
+<span class="sd">        :param element: The element (whose ``parent`` must be this node)</span>
+<span class="sd">            to be replaced.</span>
+
+<span class="sd">        :type element: Element</span>
+
+<span class="sd">        :param node: A ``Node`` whose elements will replace the given element.</span>
+
+<span class="sd">        :type node: Node</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">Node</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">Element</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">element</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="bp">self</span>
+
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">first</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">after_element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span>
+
+        <span class="n">element_to_add</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">first</span>
+        <span class="k">while</span> <span class="n">element_to_add</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">element_to_add</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span>
+            <span class="n">element_to_add</span> <span class="o">=</span> <span class="n">element_to_add</span><span class="o">.</span><span class="n">next</span>
+
+        <span class="n">element</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">first</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="n">element</span>
+
+        <span class="n">node</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">after_element</span>
+        <span class="k">if</span> <span class="n">after_element</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">after_element</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">last</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">first</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+
+
+    <span class="c"># ( ... first_node ... last_node ...)</span>
+    <span class="c"># =&gt;</span>
+    <span class="c"># ( ... (first_node ... last_node) ...)</span></div>
+<div class="viewcode-block" id="Node.wrap"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.Node.wrap">[docs]</a>    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">first_element</span><span class="p">,</span> <span class="n">last_element</span><span class="p">,</span> <span class="n">node_class_constructor</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">node_class_constructor_args</span><span class="p">,</span> <span class="o">**</span><span class="n">node_class_constructor_kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replaces the sequence of elements of this node between first_element and end_punctuation_marker with a new node,</span>
+<span class="sd">        containing that very same sequence.</span>
+
+<span class="sd">        :param first_element: The first element (whose ``parent`` must be this node)</span>
+<span class="sd">            in the sequence to be wrapped.</span>
+
+<span class="sd">        :type first_element: Element</span>
+
+<span class="sd">        :param last_element: The first element (whose ``parent`` must be this node)</span>
+<span class="sd">            in the sequence to be wrapped.</span>
+
+<span class="sd">        :type last_element: Element</span>
+
+<span class="sd">        :param node_class_constructor: A subtype of ``Node`` which will be used to construct the new node.</span>
+
+<span class="sd">        :type node_class_constructor: type</span>
+
+<span class="sd">        :param node_class_constructor_args: Arguments to pass to the constructor of the new node.</span>
+
+<span class="sd">        :param node_class_constructor_kwargs: Keyword arguments to pass to the constructor of the new node.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">()</span> <span class="k">if</span> <span class="n">node_class_constructor</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">node_class_constructor</span><span class="p">(</span><span class="o">*</span><span class="n">node_class_constructor_args</span><span class="p">,</span> <span class="o">**</span><span class="n">node_class_constructor_kwargs</span><span class="p">)</span>
+        <span class="n">new_element</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="n">new_node</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">new_element</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="n">first_element</span><span class="o">.</span><span class="n">prev</span>
+        <span class="n">new_element</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">last_element</span><span class="o">.</span><span class="n">next</span>
+        <span class="n">new_node</span><span class="o">.</span><span class="n">first</span> <span class="o">=</span> <span class="n">first_element</span>
+        <span class="n">new_node</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">last_element</span>
+        <span class="c"># if c is the head</span>
+        <span class="k">if</span> <span class="n">first_element</span><span class="o">.</span><span class="n">prev</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">first</span> <span class="o">=</span> <span class="n">new_element</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">first_element</span><span class="o">.</span><span class="n">prev</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">new_element</span>
+         <span class="c"># if c is the tail</span>
+        <span class="k">if</span> <span class="n">last_element</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">new_element</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">last_element</span><span class="o">.</span><span class="n">next</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="n">new_element</span>
+
+        <span class="n">new_node</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">new_node</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">new_node</span><span class="p">:</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">new_node</span>
+            <span class="n">new_node</span><span class="o">.</span><span class="n">range</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">range</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">e</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_element</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">count</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">&gt;=</span> <span class="n">c</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">c</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="n">c</span>
+                <span class="n">key</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">c</span> <span class="o">+</span> <span class="n">key</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">&gt;=</span> <span class="n">c</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">c</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="n">key</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">c</span> <span class="o">+</span> <span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">&gt;=</span> <span class="n">c</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">c</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                <span class="n">key</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">c</span> <span class="o">+</span> <span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">NodeIterator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">first</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Node.iterate_from"><a class="viewcode-back" href="../../API/syntax.html#Syntax.Node.Node.iterate_from">[docs]</a>    <span class="k">def</span> <span class="nf">iterate_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an iterator that goes through all elements from the ``start`` position to the end of the node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">NodeIterator</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">start</span> <span class="k">else</span> <span class="bp">None</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">code</span><span class="p">)</span> <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+        <span class="k">return</span> <span class="s">&quot;Node(</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">children</span><span class="p">)</span>
+</pre></div></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bruno Loff.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

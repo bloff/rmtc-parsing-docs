@@ -1,0 +1,444 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Transducers &mdash; rmtc-parsing 0.1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="rmtc-parsing 0.1.1 documentation" href="../index.html"/>
+        <link rel="next" title="Parsers" href="parsers.html"/>
+        <link rel="prev" title="Tokenization" href="tokenization.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> rmtc-parsing
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="streams.html">Streams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="syntax.html">Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tokenization.html">Tokenization</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Transducers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#arrangement">Arrangement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#arrangementrule">ArrangementRule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#readdirection">ReadDirection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#treetransducer">TreeTransducer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#topdowntreetransducer">TopDownTreeTransducer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bottomuptreetransducer">BottomUpTreeTransducer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#convertpreforms">ConvertPreForms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#applytorest">ApplyToRest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#block">Block</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#comments">Comments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#constituents">Constituents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#defaultpunctuation">DefaultPunctuation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="parsers.html">Parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">rmtc-parsing</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Transducers</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+          <a href="../_sources/API/transducers.txt" rel="nofollow"> View page source</a>
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="transducers">
+<span id="transducers-modules"></span><h1>Transducers<a class="headerlink" href="#transducers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="arrangement">
+<span id="id1"></span><h2>Arrangement<a class="headerlink" href="#arrangement" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangement"></span><dl class="class">
+<dt id="Transducers.Arrangement.Arrangement">
+<em class="property">class </em><tt class="descname">Arrangement</tt><big>(</big><em>rules: list</em>, <em>direction: Transducers.ReadDirection.ReadDirection=&lt;ReadDirection.LEFT_TO_RIGHT: 1&gt;</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangement.html#Arrangement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangement.Arrangement" title="Permalink to this definition">¶</a></dt>
+<dd><p>An arrangement is defined by a list of arrangement rules (<a class="reference internal" href="#arrangementrule"><em>ArrangementRule</em></a>). It traverses a single node from
+left-to-right or right-to-left. For each child of the node, for each arrangement rule, it checks if the rule is applicable,
+and, if so, applies it to transform the node at that child.</p>
+<dl class="attribute">
+<dt id="Transducers.Arrangement.Arrangement.rules">
+<tt class="descname">rules</tt><em class="property"> = None</em><a class="headerlink" href="#Transducers.Arrangement.Arrangement.rules" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of arrangement rules.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Transducers.Arrangement.Arrangement.direction">
+<tt class="descname">direction</tt><em class="property"> = None</em><a class="headerlink" href="#Transducers.Arrangement.Arrangement.direction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether the node should be left from left-to-right or from right-to-left.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="arrangementrule">
+<span id="id2"></span><h2>ArrangementRule<a class="headerlink" href="#arrangementrule" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.ArrangementRule"></span><dl class="class">
+<dt id="Transducers.ArrangementRule.ArrangementRule">
+<em class="property">class </em><tt class="descname">ArrangementRule</tt><big>(</big><em>name: str</em><big>)</big><a class="reference internal" href="../_modules/Transducers/ArrangementRule.html#ArrangementRule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.ArrangementRule.ArrangementRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>An arrangement rule is a conditional transformation of an <a class="reference internal" href="syntax.html#element"><em>Element</em></a> within a <a class="reference internal" href="syntax.html#node"><em>Node</em></a>.</p>
+<dl class="method">
+<dt id="Transducers.ArrangementRule.ArrangementRule.applies">
+<tt class="descname">applies</tt><big>(</big><em>element: Syntax.Node.Element</em><big>)</big> &rarr; bool<a class="reference internal" href="../_modules/Transducers/ArrangementRule.html#ArrangementRule.applies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.ArrangementRule.ArrangementRule.applies" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method should return <code class="docutils literal highlight highlight-python"><span class="bp">True</span></code> iff the rule should be applied at the position of the given <a class="reference internal" href="syntax.html#element"><em>Element</em></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Transducers.ArrangementRule.ArrangementRule.apply">
+<tt class="descname">apply</tt><big>(</big><em>element: Syntax.Node.Element</em><big>)</big> &rarr; Syntax.Node.Element<a class="reference internal" href="../_modules/Transducers/ArrangementRule.html#ArrangementRule.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.ArrangementRule.ArrangementRule.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assuming that <code class="docutils literal highlight highlight-python"><span class="bp">self</span><span class="o">.</span><span class="n">applies</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">True</span></code>, this method transforms the given element, and/or its parent
+node. It should return the next element to be read (usually the element immediately to the left or to the right
+of the elements involved in the transformation).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="readdirection">
+<span id="id3"></span><h2>ReadDirection<a class="headerlink" href="#readdirection" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.ReadDirection"></span><dl class="class">
+<dt id="Transducers.ReadDirection.ReadDirection">
+<em class="property">class </em><tt class="descname">ReadDirection</tt><a class="reference internal" href="../_modules/Transducers/ReadDirection.html#ReadDirection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.ReadDirection.ReadDirection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Self-explanatory enum.</p>
+<dl class="attribute">
+<dt id="Transducers.ReadDirection.ReadDirection.LEFT_TO_RIGHT">
+<tt class="descname">LEFT_TO_RIGHT</tt><em class="property"> = None</em><a class="headerlink" href="#Transducers.ReadDirection.ReadDirection.LEFT_TO_RIGHT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Left to right.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Transducers.ReadDirection.ReadDirection.RIGHT_TO_LEFT">
+<tt class="descname">RIGHT_TO_LEFT</tt><em class="property"> = None</em><a class="headerlink" href="#Transducers.ReadDirection.ReadDirection.RIGHT_TO_LEFT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Right to left.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="treetransducer">
+<span id="id4"></span><h2>TreeTransducer<a class="headerlink" href="#treetransducer" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.TreeTransducer"></span><dl class="class">
+<dt id="Transducers.TreeTransducer.TreeTransducer">
+<em class="property">class </em><tt class="descname">TreeTransducer</tt><big>(</big><em>name: str</em><big>)</big><a class="reference internal" href="../_modules/Transducers/TreeTransducer.html#TreeTransducer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.TreeTransducer.TreeTransducer" title="Permalink to this definition">¶</a></dt>
+<dd><p>A tree transducer defines some transformation on trees, represented by nested nodes (see <a class="reference internal" href="syntax.html#node"><em>Node</em></a>).</p>
+<dl class="method">
+<dt id="Transducers.TreeTransducer.TreeTransducer.transduce">
+<tt class="descname">transduce</tt><big>(</big><em>tree: Syntax.Node.Node</em><big>)</big><a class="reference internal" href="../_modules/Transducers/TreeTransducer.html#TreeTransducer.transduce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.TreeTransducer.TreeTransducer.transduce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modifies the given tree according to some transformation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Transducers.TreeTransducer.apply_transducer_chain">
+<tt class="descname">apply_transducer_chain</tt><big>(</big><em>transducer_chain: typing.List</em>, <em>form: Syntax.Code.Code</em><big>)</big><a class="reference internal" href="../_modules/Transducers/TreeTransducer.html#apply_transducer_chain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.TreeTransducer.apply_transducer_chain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies each tree transducer in a given list, in turn.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="topdowntreetransducer">
+<span id="id5"></span><h2>TopDownTreeTransducer<a class="headerlink" href="#topdowntreetransducer" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.TopDownTreeTransducer"></span><dl class="class">
+<dt id="Transducers.TopDownTreeTransducer.TopDownTreeTransducer">
+<em class="property">class </em><tt class="descname">TopDownTreeTransducer</tt><big>(</big><em>name: str</em>, <em>arrangement: Transducers.Arrangement.Arrangement</em><big>)</big><a class="reference internal" href="../_modules/Transducers/TopDownTreeTransducer.html#TopDownTreeTransducer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.TopDownTreeTransducer.TopDownTreeTransducer" title="Permalink to this definition">¶</a></dt>
+<dd><p>A top-down tree transducer is defined by an arrangement (see <a class="reference internal" href="#arrangement"><em>Arrangement</em></a>), and transforms a tree by traversing
+it from top to bottom, and applying the arrangement at each level.</p>
+<p>So it starts at the root of the tree, and applies the arrangement, which could modify the root; it then goes through each
+child of the (modified) root node, and recursively calls itself on that child.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="bottomuptreetransducer">
+<span id="id6"></span><h2>BottomUpTreeTransducer<a class="headerlink" href="#bottomuptreetransducer" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.BottomUpTreeTransducer"></span><dl class="class">
+<dt id="Transducers.BottomUpTreeTransducer.BottomUpTreeTransducer">
+<em class="property">class </em><tt class="descname">BottomUpTreeTransducer</tt><big>(</big><em>name: str</em>, <em>arrangement: Transducers.Arrangement.Arrangement</em><big>)</big><a class="reference internal" href="../_modules/Transducers/BottomUpTreeTransducer.html#BottomUpTreeTransducer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.BottomUpTreeTransducer.BottomUpTreeTransducer" title="Permalink to this definition">¶</a></dt>
+<dd><p>A bottom-up tree transducer is defined by an arrangement (see <a class="reference internal" href="#arrangement"><em>Arrangement</em></a>), and transforms a tree by traversing
+it from bottom to top, and applying the arrangement at each level.</p>
+<p>So it starts at the root of the tree, and recursively calls itself on each child. It then applies the arrangement to the root,
+which may modify it.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="convertpreforms">
+<span id="id7"></span><h2>ConvertPreForms<a class="headerlink" href="#convertpreforms" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.ConvertPreForms"></span><dl class="class">
+<dt id="Transducers.ConvertPreForms.ConvertPreforms">
+<em class="property">class </em><tt class="descname">ConvertPreforms</tt><a class="reference internal" href="../_modules/Transducers/ConvertPreForms.html#ConvertPreforms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.ConvertPreForms.ConvertPreforms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transverses the tree in a bottom-up fashion. For each PreForm or PreTuple, converts it into a Form or Tuple if more than
+one child is present, and otherwise replaces the PreForm/PreTuple with its single child.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="applytorest">
+<span id="id8"></span><h2>ApplyToRest<a class="headerlink" href="#applytorest" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.ApplyToRest"></span><dl class="class">
+<dt id="Transducers.Arrangements.ApplyToRest.ApplyToRest">
+<em class="property">class </em><tt class="descname">ApplyToRest</tt><big>(</big><em>names</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/ApplyToRest.html#ApplyToRest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.ApplyToRest.ApplyToRest" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-python"><div class="highlight"><pre> name ⋅    ⦅name ⦆ ⋅
+ name ⋅   ⦅name⦆ ⋅
+</pre></div>
+</div>
+<p>Used, for example, to convert <code class="docutils literal highlight highlight-python"><span class="k">return</span></code> into <code class="docutils literal highlight highlight-python"><span class="k">return</span><span class="p">()</span></code>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="block">
+<span id="id9"></span><h2>Block<a class="headerlink" href="#block" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.Block"></span><dl class="class">
+<dt id="Transducers.Arrangements.Block.Block">
+<em class="property">class </em><tt class="descname">Block</tt><big>(</big><em>wrap_class=&lt;class 'Syntax.PreForm.PreForm'&gt;</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/Block.html#Block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.Block.Block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Arrangement for blocks, triggered on the pattern <code class="docutils literal highlight highlight-python">BEGIN ⋅</code>.</p>
+<p>If the <code class="docutils literal highlight highlight-python"><span class="n">BEGIN</span></code> token has zero <code class="docutils literal highlight highlight-python"><span class="n">INDENT</span></code> tokens, does the transformation:</p>
+<div class="highlight-python"><div class="highlight"><pre>BEGIN⋅ head  END  ⟨⟅head ⟆⟩⋅
+</pre></div>
+</div>
+<p>where <code class="docutils literal highlight highlight-python">⟅⟆</code> is a <code class="docutils literal highlight highlight-python"><span class="n">Node</span></code> of type <code class="docutils literal highlight highlight-python"><span class="bp">self</span><span class="o">.</span><span class="n">wrap_class</span></code>. <code class="docutils literal highlight highlight-python">⟨⟩</code> is a <code class="docutils literal highlight highlight-python"><span class="n">Punctuator</span></code>, which gets the list of punctuation tokens
+associated with the <code class="docutils literal highlight highlight-python"><span class="n">BEGIN</span></code> token.</p>
+<p>If the <code class="docutils literal highlight highlight-python"><span class="n">BEGIN</span></code> token has one INDENT, does the transformation:</p>
+<div class="highlight-python"><div class="highlight"><pre>BEGIN⋅ head  INDENT  END  ⟨⟅head  INDENT ⟆⟩⋅
+</pre></div>
+</div>
+<p>(<code class="docutils literal highlight highlight-python"><span class="n">INDENT</span></code> is signaled as the <code class="docutils literal highlight highlight-python"><span class="n">end_punctuation_marker</span></code> of the punctuator, see <a class="reference internal" href="syntax.html#punctuator"><em>Punctuator</em></a>).</p>
+<p>Currently more than one INDENT token is unimplemented (and raises <code class="docutils literal highlight highlight-python"><span class="ne">NotImplementedError</span></code>).</p>
+<dl class="attribute">
+<dt id="Transducers.Arrangements.Block.Block.wrap_class">
+<tt class="descname">wrap_class</tt><em class="property"> = None</em><a class="headerlink" href="#Transducers.Arrangements.Block.Block.wrap_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>The type of node to wrap block in. Usually <code class="docutils literal highlight highlight-python"><span class="n">PreForm</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="comments">
+<span id="id10"></span><h2>Comments<a class="headerlink" href="#comments" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.Comments"></span><dl class="class">
+<dt id="Transducers.Arrangements.Comments.RawComment">
+<em class="property">class </em><tt class="descname">RawComment</tt><a class="reference internal" href="../_modules/Transducers/Arrangements/Comments.html#RawComment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.Comments.RawComment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Arrangement for comments without interpolated code. Does the transformation:</p>
+<div class="highlight-python"><div class="highlight"><pre>BEGIN_MACRO(&quot;##&quot;)⋅  END_MACRO  ⋅
+</pre></div>
+</div>
+<p>(i.e., removes everything between <code class="docutils literal highlight highlight-python"><span class="n">BEGIN_MACRO</span></code> and <code class="docutils literal highlight highlight-python"><span class="n">END_MACRO</span></code>).</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Transducers.Arrangements.Comments.Comment">
+<em class="property">class </em><tt class="descname">Comment</tt><a class="reference internal" href="../_modules/Transducers/Arrangements/Comments.html#Comment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.Comments.Comment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Arrangement for comments without interpolated code. Does the transformation:</p>
+<div class="highlight-python"><div class="highlight"><pre>BEGIN_MACRO(&quot;#&quot;)⋅  END_MACRO  ⦅debug-values ⦆⋅
+</pre></div>
+</div>
+<p>where <code class="docutils literal highlight highlight-python"></code> removes all COMMENT tokens.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="constituents">
+<span id="id11"></span><h2>Constituents<a class="headerlink" href="#constituents" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.Constituents"></span><dl class="class">
+<dt id="Transducers.Arrangements.Constituents.Constituent">
+<em class="property">class </em><tt class="descname">Constituent</tt><a class="reference internal" href="../_modules/Transducers/Arrangements/Constituents.html#Constituent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.Constituents.Constituent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces CONSTITUENT tokens with Identifiers or (int or float) Literals.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="defaultpunctuation">
+<span id="id12"></span><h2>DefaultPunctuation<a class="headerlink" href="#defaultpunctuation" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.DefaultPunctuation"></span><dl class="class">
+<dt id="Transducers.Arrangements.DefaultPunctuation.DefaultPunctuation">
+<em class="property">class </em><tt class="descname">DefaultPunctuation</tt><a class="reference internal" href="../_modules/Transducers/Arrangements/DefaultPunctuation.html#DefaultPunctuation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.DefaultPunctuation.DefaultPunctuation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes punctuators, by organizing ,-and-;-separated lists into nested tuples.</p>
+<p>Takes something like:</p>
+<div class="highlight-python"><div class="highlight"><pre>⟨⟅H     a b,  c d ;   e f, g, h :    x y, z⟆⟩
+</pre></div>
+</div>
+<p>And outputs:</p>
+<div class="highlight-python"><div class="highlight"><pre>⟅H ( ((a b) (c d)) ((e f) g h) )  ((x y) z)⟆
+</pre></div>
+</div>
+<p>where <code class="docutils literal highlight highlight-python"><span class="n">H</span></code> is the first punctuator.skip_count elements, and <code class="docutils literal highlight highlight-python">⟅⟆</code> denotes
+some subclass of <a class="reference internal" href="syntax.html#node"><em>Node</em></a>.</p>
+<p>If the punctuator has a non-None <code class="docutils literal highlight highlight-python"><span class="n">end_punctuation_marker</span></code> attribute, then takes:</p>
+<div class="highlight-python"><div class="highlight"><pre>⟨⟅H     a b,  c d ;   e f, g, h :    x y, z   X ⟆⟩
+</pre></div>
+</div>
+<p>And outputs:</p>
+<div class="highlight-python"><div class="highlight"><pre>⟅H ( ((a b) (c d)) ((e f) g h) )  ((x y) z) ⟆
+</pre></div>
+</div>
+<p>where <code class="docutils literal highlight highlight-python"><span class="n">X</span></code> is the punctuator&#8217;s <code class="docutils literal highlight highlight-python"><span class="n">end_punctuation_marker</span></code>.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="parsers.html" class="btn btn-neutral float-right" title="Parsers" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tokenization.html" class="btn btn-neutral" title="Tokenization" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bruno Loff.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
