@@ -236,6 +236,36 @@ elements are all Tokens.</li>
 <div class="section" id="transducers">
 <h2><a class="reference internal" href="API/transducers.html#transducers-modules"><em>Transducers</em></a><a class="headerlink" href="#transducers" title="Permalink to this headline">¶</a></h2>
 <p>Tree transducers.</p>
+<ul>
+<li><p class="first"><a class="reference internal" href="API/transducers.html#arrangement"><em>Arrangement</em></a> - A transformation of a single node.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="API/transducers.html#arrangementrule"><em>ArrangementRule</em></a> - A rule for when and how to transform a child of a node.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="API/transducers.html#readdirection"><em>ReadDirection</em></a> - Left-to-right or right-to-left.</p>
+</li>
+<li><dl class="first docutils">
+<dt><a class="reference internal" href="API/transducers.html#treetransducer"><em>TreeTransducer</em></a> - A transformation of a tree (represented by nested nodes).</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="API/transducers.html#topdowntreetransducer"><em>TopDownTreeTransducer</em></a></li>
+<li><a class="reference internal" href="API/transducers.html#bottomuptreetransducer"><em>BottomUpTreeTransducer</em></a></li>
+<li><a class="reference internal" href="API/transducers.html#convertpreforms"><em>ConvertPreForms</em></a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>The arrangement rules currently implemented are:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="API/transducers.html#applytorest"><em>ApplyToRest</em></a> - To process a form like <code class="docutils literal highlight highlight-python"><span class="k">return</span></code>, which, if appearing in isolation, actually means <code class="docutils literal highlight highlight-python"><span class="k">return</span><span class="p">()</span></code>.</li>
+<li><a class="reference internal" href="API/transducers.html#block"><em>Block</em></a> - Indented blocks.</li>
+<li><a class="reference internal" href="API/transducers.html#comments"><em>Comments</em></a> - Comments.</li>
+<li><a class="reference internal" href="API/transducers.html#constituents"><em>Constituents</em></a> - Constituents (identifiers, numerical literals, etc)</li>
+<li><a class="reference internal" href="API/transducers.html#defaultpunctuation"><em>DefaultPunctuation</em></a> - Parses ,-and-;-separated lists into nested tuples.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
 </div>
 <div class="section" id="parsers">
 <h2><a class="reference internal" href="API/parsers.html#parsers-modules"><em>Parsers</em></a><a class="headerlink" href="#parsers" title="Permalink to this headline">¶</a></h2>

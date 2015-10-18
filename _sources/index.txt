@@ -115,6 +115,20 @@ Readtable-macro parsing.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Tree transducers.
 
+- :ref:`Arrangement` - A transformation of a single node.
+- :ref:`ArrangementRule` - A rule for when and how to transform a child of a node.
+- :ref:`ReadDirection` - Left-to-right or right-to-left.
+- :ref:`TreeTransducer` - A transformation of a tree (represented by nested nodes).
+    - :ref:`TopDownTreeTransducer`
+    - :ref:`BottomUpTreeTransducer`
+    - :ref:`ConvertPreForms`
+- The arrangement rules currently implemented are:
+   - :ref:`ApplyToRest` - To process a form like ``return``, which, if appearing in isolation, actually means ``return()``.
+   - :ref:`Block` - Indented blocks.
+   - :ref:`Comments` - Comments.
+   - :ref:`Constituents` - Constituents (identifiers, numerical literals, etc)
+   - :ref:`DefaultPunctuation` - Parses ,-and-;-separated lists into nested tuples.
+
 
 :ref:`Parsers <parsers_modules>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
