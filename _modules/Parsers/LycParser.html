@@ -1,0 +1,574 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Parsers.LycParser &mdash; rmtc-parsing 0.1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="rmtc-parsing 0.1.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> rmtc-parsing
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../API/common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/streams.html">Streams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/syntax.html">Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/tokenization.html">Tokenization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/transducers.html">Transducers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/parsers.html">Parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">rmtc-parsing</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+        <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>Parsers.LycParser</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Parsers.LycParser</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">Parsers.RMTCParser</span> <span class="kn">import</span> <span class="n">RMTCParser</span>
+<span class="kn">from</span> <span class="nn">Streams.CharacterStream</span> <span class="kn">import</span> <span class="n">CharacterStream</span>
+<span class="kn">from</span> <span class="nn">Streams.IndentedCharacterStream</span> <span class="kn">import</span> <span class="n">IndentedCharacterStream</span>
+<span class="kn">from</span> <span class="nn">Tokenization.Readtable</span> <span class="kn">import</span> <span class="n">make_readtable</span><span class="p">,</span> <span class="n">RT</span>
+<span class="kn">from</span> <span class="nn">Tokenization.Tokenizers.RawComment</span> <span class="kn">import</span> <span class="n">RawCommentTokenizer</span>
+<span class="kn">from</span> <span class="nn">Tokenization.Tokenizers.Comment</span> <span class="kn">import</span> <span class="n">CommentTokenizer</span>
+<span class="kn">from</span> <span class="nn">Tokenization.Tokenizers.DelimitedIdentifierTokenizer</span> <span class="kn">import</span> <span class="n">DelimitedIdentifierTokenizer</span>
+<span class="kn">from</span> <span class="nn">Tokenization.Tokenizers.Delimiter</span> <span class="kn">import</span> <span class="n">DelimiterTokenizer</span>
+<span class="kn">from</span> <span class="nn">Tokenization.Tokenizers.IndentationReadtable</span> <span class="kn">import</span> <span class="n">IndentationReadtableTokenizer</span>
+<span class="kn">from</span> <span class="nn">Tokenization.Tokenizers.String</span> <span class="kn">import</span> <span class="n">StringTokenizer</span>
+<span class="kn">from</span> <span class="nn">Tokenization.TokenizationContext</span> <span class="kn">import</span> <span class="n">TokenizationContext</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.ApplyToRest</span> <span class="kn">import</span> <span class="n">ApplyToRest</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangement</span> <span class="kn">import</span> <span class="n">Arrangement</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.LeftRightBinaryOperator</span> <span class="kn">import</span> <span class="n">LeftRightBinaryOperator</span>
+<span class="kn">from</span> <span class="nn">Transducers.TopDownTreeTransducer</span> <span class="kn">import</span> <span class="n">TopDownTreeTransducer</span>
+<span class="kn">from</span> <span class="nn">Transducers.ConvertPreForms</span> <span class="kn">import</span> <span class="n">ConvertPreforms</span>
+<span class="kn">from</span> <span class="nn">Transducers.ReadDirection</span> <span class="kn">import</span> <span class="n">ReadDirection</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.Block</span> <span class="kn">import</span> <span class="n">Block</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.Comments</span> <span class="kn">import</span> <span class="n">Comment</span><span class="p">,</span> <span class="n">RawComment</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.Constituents</span> <span class="kn">import</span> <span class="n">Constituent</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.DefaultPunctuation</span> <span class="kn">import</span> <span class="n">DefaultPunctuation</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.Delimiters</span> <span class="kn">import</span> <span class="n">ParenthesisWithHead</span><span class="p">,</span> <span class="n">ParenthesisNoHead</span><span class="p">,</span> \
+    <span class="n">ApplyParenthesis</span><span class="p">,</span> <span class="n">Delimiters</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.IfElse</span> <span class="kn">import</span> <span class="n">InfixIfElse</span><span class="p">,</span> <span class="n">IfElifElse</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.LeftRightBinaryOperatorReversedArgs</span> <span class="kn">import</span> <span class="n">LeftRightBinaryOperatorReversedArgs</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.LeftRightBinaryOperatorTwoSymbols</span> <span class="kn">import</span> <span class="n">LeftRightBinaryOperatorTwoSymbols</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.LeftRightBinaryTokenCapturingOperator</span> <span class="kn">import</span> <span class="n">LeftRightBinaryTokenCapturingOperator</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.LeftRightNaryOperator</span> <span class="kn">import</span> <span class="n">LeftRightNaryOperator</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.LeftRightUnaryPostfixNospaceOperator</span> <span class="kn">import</span> <span class="n">LeftRightUnaryPostfixNospaceOperator</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.LeftRightUnaryPrefixNospaceTokenCapturingOperator</span> <span class="kn">import</span> \
+    <span class="n">LeftRightUnaryPrefixNospaceTokenCapturingOperator</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.RightLeftBinaryOperator</span> <span class="kn">import</span> <span class="n">RightLeftBinaryOperator</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.RightLeftUnaryPrefixNospaceOperator</span> <span class="kn">import</span> <span class="n">RightLeftUnaryPrefixNospaceOperator</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.RightLeftUnaryPrefixOperator</span> <span class="kn">import</span> <span class="n">RightLeftUnaryPrefixOperator</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.Strings</span> <span class="kn">import</span> <span class="n">Strings</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.TransformationArrow</span> <span class="kn">import</span> <span class="n">TransformationArrow</span>
+
+
+
+
+<span class="c">#region Default lyc readtable</span>
+
+<span class="n">default_lyc_readtable</span> <span class="o">=</span> <span class="n">make_readtable</span><span class="p">([</span>
+    <span class="p">[</span><span class="n">RT</span><span class="o">.</span><span class="n">MACRO</span><span class="p">,</span>
+        <span class="p">[</span><span class="s">&#39;(&#39;</span><span class="p">,</span> <span class="s">&#39;⦅&#39;</span><span class="p">,</span> <span class="s">&#39;[&#39;</span><span class="p">,</span> <span class="s">&#39;⟦&#39;</span><span class="p">,</span> <span class="s">&#39;{&#39;</span><span class="p">,</span> <span class="s">&#39;⦃&#39;</span><span class="p">,</span> <span class="s">&#39;‘&#39;</span><span class="p">,</span> <span class="s">&#39;⟨&#39;</span><span class="p">],</span>
+        <span class="p">{</span><span class="s">&#39;tokenizer&#39;</span><span class="p">:</span> <span class="s">&#39;DelimiterTokenizer&#39;</span><span class="p">}],</span>
+
+    <span class="p">[</span><span class="n">RT</span><span class="o">.</span><span class="n">CLOSING</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;”&quot;</span><span class="p">,</span> <span class="s">&quot;)&quot;</span><span class="p">,</span> <span class="s">&quot;⦆&quot;</span><span class="p">,</span> <span class="s">&quot;]&quot;</span><span class="p">,</span> <span class="s">&quot;⟧&quot;</span><span class="p">,</span> <span class="s">&quot;}&quot;</span><span class="p">,</span> <span class="s">&quot;⦄&quot;</span><span class="p">,</span> <span class="s">&quot;◁&quot;</span><span class="p">,</span> <span class="s">&quot;’&quot;</span><span class="p">,</span> <span class="s">&#39;⟩&#39;</span><span class="p">],],</span>
+
+    <span class="p">[</span><span class="n">RT</span><span class="o">.</span><span class="n">MACRO</span><span class="p">,</span> <span class="s">&#39;«&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;tokenizer&#39;</span><span class="p">:</span> <span class="s">&#39;DelimitedSymbolTokenizer&#39;</span><span class="p">,</span> <span class="s">&#39;preserve-leading-whitespace&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}],</span>
+
+<span class="c">#    [RT.MACRO, &#39;‘&#39;, {&#39;tokenizer&#39;: &#39;Quote&#39;}],</span>
+
+    <span class="p">[</span><span class="n">RT</span><span class="o">.</span><span class="n">MACRO</span><span class="p">,</span> <span class="s">&#39;“&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;tokenizer&#39;</span><span class="p">:</span> <span class="s">&#39;StringTokenizer&#39;</span><span class="p">,</span> <span class="s">&#39;preserve-leading-whitespace&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}],</span>
+
+    <span class="p">[</span><span class="n">RT</span><span class="o">.</span><span class="n">MACRO</span><span class="p">,</span> <span class="s">&#39;#&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;tokenizer&#39;</span><span class="p">:</span> <span class="s">&#39;CommentTokenizer&#39;</span><span class="p">,</span> <span class="s">&#39;preserve-leading-whitespace&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}],</span>
+
+    <span class="p">[</span><span class="n">RT</span><span class="o">.</span><span class="n">MACRO</span><span class="p">,</span> <span class="s">&#39;##&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;tokenizer&#39;</span><span class="p">:</span> <span class="s">&#39;RawCommentTokenizer&#39;</span><span class="p">,</span> <span class="s">&#39;preserve-leading-whitespace&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}],</span>
+
+    <span class="c"># [RT.MACRO, &#39;literate▷\n&#39;, {&#39;tokenizer&#39;: &#39;Literate&#39;}],</span>
+
+    <span class="p">[</span><span class="n">RT</span><span class="o">.</span><span class="n">ISOLATED_CONSTITUENT</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
+               <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">],],</span>
+
+    <span class="p">[</span><span class="n">RT</span><span class="o">.</span><span class="n">PUNCTUATION</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="s">&#39;;&#39;</span><span class="p">,</span> <span class="s">&#39;,&#39;</span><span class="p">,]],</span>
+
+    <span class="p">[</span><span class="n">RT</span><span class="o">.</span><span class="n">ISOLATED_CONSTITUENT</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;~&quot;</span><span class="p">,</span> <span class="s">&quot;*&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&amp;&quot;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\\</span><span class="s">&quot;</span><span class="p">,</span> <span class="s">&quot;$&quot;</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="s">&quot;⫽&quot;</span><span class="p">,</span> <span class="c"># 1st priority</span>
+
+               <span class="s">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;!&#39;</span><span class="p">,</span> <span class="s">&#39;&amp;&#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">@&#39;</span><span class="p">,</span> <span class="s">&#39;~@&#39;</span><span class="p">,</span>
+               <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;%&#39;</span><span class="p">,</span>
+               <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
+               <span class="s">&#39;&lt;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&gt;&#39;</span><span class="p">,</span>
+               <span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;≤&#39;</span><span class="p">,</span> <span class="s">&#39;≥&#39;</span><span class="p">,</span> <span class="s">&#39;∈&#39;</span><span class="p">,</span> <span class="s">&#39;∉&#39;</span><span class="p">,</span>
+               <span class="s">&#39;=&#39;</span><span class="p">,</span> <span class="s">&#39;≠&#39;</span><span class="p">,</span>
+               <span class="s">&#39;^&#39;</span><span class="p">,</span>
+               <span class="s">&#39;|&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="c"># second | is meta-|</span>
+               <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="c"># meta-&amp;</span>
+               <span class="s">&#39;:=&#39;</span><span class="p">,</span> <span class="s">&#39;+=&#39;</span><span class="p">,</span> <span class="s">&#39;-=&#39;</span><span class="p">,</span> <span class="s">&#39;×=&#39;</span><span class="p">,</span> <span class="s">&#39;÷=&#39;</span><span class="p">,</span> <span class="s">&#39;%=&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&gt;=&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&lt;=&#39;</span><span class="p">,</span> <span class="s">&#39;&amp;=&#39;</span><span class="p">,</span> <span class="s">&#39;^=&#39;</span><span class="p">,</span> <span class="s">&#39;|=&#39;</span><span class="p">,</span> <span class="s">&#39;≤ₜ&#39;</span><span class="p">,</span> <span class="s">&#39;and=&#39;</span><span class="p">,</span> <span class="s">&#39;or=&#39;</span><span class="p">]],</span>
+
+
+    <span class="p">[</span><span class="n">RT</span><span class="o">.</span><span class="n">INVALID</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">],</span> <span class="p">{</span><span class="s">&#39;error-message&#39;</span><span class="p">:</span> <span class="s">&quot;Tabs are not allowed as whitespace.&quot;</span><span class="p">}],</span>
+
+    <span class="p">[</span><span class="n">RT</span><span class="o">.</span><span class="n">WHITESPACE</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">],</span>
+    <span class="p">[</span><span class="n">RT</span><span class="o">.</span><span class="n">NEWLINE</span><span class="p">,</span> <span class="p">[</span><span class="nb">chr</span><span class="p">(</span><span class="mh">0x0A</span><span class="p">),</span> <span class="nb">chr</span><span class="p">(</span><span class="mh">0x0D</span><span class="p">),</span> <span class="nb">chr</span><span class="p">(</span><span class="mh">0x0A</span><span class="p">)</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mh">0x0D</span><span class="p">),</span> <span class="nb">chr</span><span class="p">(</span><span class="mh">0x0D</span><span class="p">)</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mh">0x0A</span><span class="p">)],],</span>
+
+    <span class="p">[</span><span class="s">&#39;DEFAULT&#39;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">RT</span><span class="o">.</span><span class="n">CONSTITUENT</span><span class="p">}],</span>
+<span class="p">])</span>
+<span class="c">#endregion</span>
+
+
+<span class="c">#region Lyc Transducer Chain</span>
+<span class="n">default_lyc_transducer_chain</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="k">def</span> <span class="nf">define_default_lyc_transducer_chain</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">default_lyc_transducer_chain</span>
+
+    <span class="c">#region Transducers</span>
+    <span class="n">tt_constituent</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Constituent&quot;</span><span class="p">,</span> <span class="n">Arrangement</span><span class="p">([</span><span class="n">Constituent</span><span class="p">()]))</span>
+
+
+    <span class="n">tt_primary</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Primary&quot;</span><span class="p">,</span>
+                   <span class="n">Arrangement</span><span class="p">([</span>
+                       <span class="n">Comment</span><span class="p">(),</span>
+                       <span class="n">RawComment</span><span class="p">(),</span>
+                       <span class="n">LeftRightUnaryPrefixNospaceTokenCapturingOperator</span><span class="p">({</span><span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;~&#39;</span><span class="p">,</span> <span class="s">&#39;$&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">}),</span>
+                       <span class="n">LeftRightBinaryTokenCapturingOperator</span><span class="p">({</span><span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">}),</span>
+                       <span class="n">LeftRightUnaryPostfixNospaceOperator</span><span class="p">({</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">}),</span>
+
+                       <span class="n">Block</span><span class="p">(),</span>
+                       <span class="n">ParenthesisWithHead</span><span class="p">(),</span>
+                       <span class="n">ParenthesisNoHead</span><span class="p">(),</span>
+
+                       <span class="n">ApplyParenthesis</span><span class="p">(),</span>
+                       <span class="c"># ArgSeqArrangement(),</span>
+                       <span class="n">Delimiters</span><span class="p">({</span><span class="s">&#39;[&#39;</span><span class="p">,</span> <span class="s">&#39;⟦&#39;</span><span class="p">,</span> <span class="s">&#39;{&#39;</span><span class="p">,</span> <span class="s">&#39;⦃&#39;</span><span class="p">}),</span>
+                       <span class="c">#Quote(&#39;‘&#39;),</span>
+                       <span class="n">Strings</span><span class="p">(),</span>
+                       <span class="p">]))</span>
+
+    <span class="c"># tt_block = TopDownTreeTransducer(&quot;Block&quot;, Arrangement([Block()]))</span>
+
+    <span class="n">tt_punctuation</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Punctuation&quot;</span><span class="p">,</span> <span class="n">Arrangement</span><span class="p">([</span><span class="n">DefaultPunctuation</span><span class="p">()]))</span>
+
+    <span class="n">tt_infix_special_ops</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Infix Gather-Alls&quot;</span><span class="p">,</span>
+                             <span class="n">Arrangement</span><span class="p">([</span>
+                             <span class="c">#TRF_AssignmentStyleOperator(assignment_symbols),</span>
+    <span class="c">#                                            TFR_MarkSpecialOperator(&#39;:=&#39;, False),</span>
+                                <span class="n">TransformationArrow</span><span class="p">({</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">}),</span>
+                                <span class="n">ApplyToRest</span><span class="p">({</span><span class="s">&#39;return&#39;</span><span class="p">}),]))</span>
+
+
+    <span class="n">tt_prefix</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Prefix Operators&quot;</span><span class="p">,</span>
+                  <span class="n">Arrangement</span><span class="p">([</span>
+                        <span class="n">RightLeftUnaryPrefixNospaceOperator</span><span class="p">({</span><span class="s">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;!&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;*&#39;</span><span class="p">,</span> <span class="s">&#39;&amp;&#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">@&#39;</span><span class="p">,</span> <span class="s">&#39;~@&#39;</span> <span class="p">}),</span>
+                    <span class="c"># TFR_RightLeftUnaryPrefixOperator({&#39;make&#39;})</span>
+                    <span class="p">],</span> <span class="n">ReadDirection</span><span class="o">.</span><span class="n">RIGHT_TO_LEFT</span><span class="p">))</span>
+
+    <span class="n">tt_product</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Product and Division&quot;</span><span class="p">,</span>
+                   <span class="n">Arrangement</span><span class="p">([</span>
+                       <span class="n">LeftRightNaryOperator</span><span class="p">({</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;%&#39;</span><span class="p">})</span>
+                       <span class="p">]))</span>
+
+    <span class="n">tt_addition</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Addition and Subtraction&quot;</span><span class="p">,</span>
+                   <span class="n">Arrangement</span><span class="p">([</span>
+                       <span class="n">LeftRightNaryOperator</span><span class="p">({</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">})</span>
+                       <span class="p">]))</span>
+
+    <span class="n">tt_shift</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Left and Right Shift&quot;</span><span class="p">,</span>
+                   <span class="n">Arrangement</span><span class="p">([</span>
+                       <span class="n">LeftRightNaryOperator</span><span class="p">({</span><span class="s">&#39;&lt;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&gt;&#39;</span><span class="p">})</span>
+                       <span class="p">]))</span>
+    <span class="c">#</span>
+    <span class="c"># tt_dots = TopDownTreeTransducer(&quot;Two-dots&quot;,</span>
+    <span class="c">#                 Arrangement([</span>
+    <span class="c">#                     LeftRightBinaryNospaceOperator({&#39;‥&#39;}),</span>
+    <span class="c">#                     LeftRightUnaryPostfixOperator({&#39;‥&#39;}),</span>
+    <span class="c">#                     ]))</span>
+
+    <span class="n">tt_casting</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Casting&quot;</span><span class="p">,</span>
+                    <span class="n">Arrangement</span><span class="p">([</span>
+                        <span class="n">LeftRightBinaryOperator</span><span class="p">({</span><span class="s">&#39;as&#39;</span><span class="p">,</span> <span class="s">&#39;to&#39;</span><span class="p">,</span> <span class="s">&#39;of&#39;</span><span class="p">,</span> <span class="s">&#39;cast-as&#39;</span><span class="p">})</span>
+                        <span class="p">]))</span>
+
+    <span class="n">tt_arrow</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Arrows&quot;</span><span class="p">,</span>
+                        <span class="n">Arrangement</span><span class="p">([</span>
+                            <span class="n">RightLeftBinaryOperator</span><span class="p">({</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">})</span>
+                        <span class="p">],</span> <span class="n">ReadDirection</span><span class="o">.</span><span class="n">RIGHT_TO_LEFT</span><span class="p">))</span>
+
+    <span class="n">tt_comparison</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Comparisons&quot;</span><span class="p">,</span>
+                        <span class="n">Arrangement</span><span class="p">([</span>
+                            <span class="n">LeftRightNaryOperator</span><span class="p">({</span><span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;≤&#39;</span><span class="p">,</span> <span class="s">&#39;≥&#39;</span><span class="p">}),</span>
+                            <span class="n">LeftRightBinaryOperatorTwoSymbols</span><span class="p">({(</span><span class="s">&#39;not&#39;</span><span class="p">,</span> <span class="s">&#39;in&#39;</span><span class="p">)}),</span>
+                            <span class="n">LeftRightBinaryOperator</span><span class="p">({</span><span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="s">&#39;∈&#39;</span><span class="p">,</span> <span class="s">&#39;∉&#39;</span><span class="p">}),</span>
+
+                        <span class="p">]))</span>
+
+
+    <span class="n">tt_equality</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Equality&quot;</span><span class="p">,</span>
+                        <span class="n">Arrangement</span><span class="p">([</span>
+                            <span class="n">LeftRightNaryOperator</span><span class="p">({</span><span class="s">&#39;=&#39;</span><span class="p">,</span> <span class="s">&#39;≠&#39;</span><span class="p">})</span>
+                        <span class="p">]))</span>
+
+    <span class="n">tt_bit_and</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Bitwise AND&quot;</span><span class="p">,</span>
+                        <span class="n">Arrangement</span><span class="p">([</span>
+                            <span class="n">LeftRightNaryOperator</span><span class="p">({</span><span class="s">&#39;&amp;&#39;</span><span class="p">})</span>
+                        <span class="p">]))</span>
+
+    <span class="n">tt_bit_xor</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Bitwise XOR&quot;</span><span class="p">,</span>
+                        <span class="n">Arrangement</span><span class="p">([</span>
+                            <span class="n">LeftRightNaryOperator</span><span class="p">({</span><span class="s">&#39;^&#39;</span><span class="p">})</span>
+                        <span class="p">]))</span>
+
+    <span class="n">tt_bit_or</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Bitwise OR&quot;</span><span class="p">,</span>
+                        <span class="n">Arrangement</span><span class="p">([</span>
+                            <span class="n">LeftRightNaryOperator</span><span class="p">({</span><span class="s">&#39;|&#39;</span><span class="p">})</span>
+                        <span class="p">]))</span>
+
+
+    <span class="n">tt_prefix_not</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Bitwise OR&quot;</span><span class="p">,</span>
+                        <span class="n">Arrangement</span><span class="p">([</span>
+                            <span class="n">RightLeftUnaryPrefixOperator</span><span class="p">({</span><span class="s">&#39;not&#39;</span><span class="p">})</span>
+                        <span class="p">],</span> <span class="n">ReadDirection</span><span class="o">.</span><span class="n">RIGHT_TO_LEFT</span><span class="p">))</span>
+
+
+    <span class="n">tt_bool_and</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Boolean AND&quot;</span><span class="p">,</span>
+                        <span class="n">Arrangement</span><span class="p">([</span>
+                            <span class="n">LeftRightNaryOperator</span><span class="p">({</span><span class="s">&#39;and&#39;</span><span class="p">})</span>
+                        <span class="p">]))</span>
+
+    <span class="n">tt_bool_or</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Boolean OR&quot;</span><span class="p">,</span>
+                        <span class="n">Arrangement</span><span class="p">([</span>
+                            <span class="n">LeftRightNaryOperator</span><span class="p">({</span><span class="s">&#39;or&#39;</span><span class="p">})</span>
+                        <span class="p">]))</span>
+
+    <span class="n">tt_if_else</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;If-Elif-Else and Infix If-Else&quot;</span><span class="p">,</span>
+                        <span class="n">Arrangement</span><span class="p">([</span>
+                            <span class="n">InfixIfElse</span><span class="p">({(</span><span class="s">&#39;if&#39;</span><span class="p">,</span> <span class="s">&#39;else&#39;</span><span class="p">)}),</span>
+                            <span class="n">IfElifElse</span><span class="p">()</span>
+                        <span class="p">]))</span>
+
+    <span class="n">tt_infix_for</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Infix For&quot;</span><span class="p">,</span>
+                        <span class="n">Arrangement</span><span class="p">([</span>
+                            <span class="n">LeftRightBinaryOperatorReversedArgs</span><span class="p">({</span><span class="s">&#39;for&#39;</span><span class="p">})</span>
+                        <span class="p">]))</span>
+
+    <span class="n">_assignment_symbols</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;:=&#39;</span><span class="p">,</span> <span class="s">&#39;+=&#39;</span><span class="p">,</span> <span class="s">&#39;−=&#39;</span><span class="p">,</span> <span class="s">&#39;×=&#39;</span><span class="p">,</span> <span class="s">&#39;÷=&#39;</span><span class="p">,</span> <span class="s">&#39;%=&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&gt;=&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&lt;=&#39;</span><span class="p">,</span> <span class="s">&#39;&amp;=&#39;</span><span class="p">,</span> <span class="s">&#39;^=&#39;</span><span class="p">,</span> <span class="s">&#39;|=&#39;</span><span class="p">,</span> <span class="s">&#39;≤_t&#39;</span><span class="p">,</span> <span class="s">&#39;and=&#39;</span><span class="p">,</span> <span class="s">&#39;or=&#39;</span><span class="p">}</span>
+    <span class="n">tt_assignments</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Assignments&quot;</span><span class="p">,</span>
+                        <span class="n">Arrangement</span><span class="p">([</span>
+                            <span class="n">RightLeftBinaryOperator</span><span class="p">(</span><span class="n">_assignment_symbols</span><span class="p">)</span>
+                        <span class="p">],</span> <span class="n">ReadDirection</span><span class="o">.</span><span class="n">RIGHT_TO_LEFT</span><span class="p">))</span>
+
+    <span class="n">tt_meta_and</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Meta AND&quot;</span><span class="p">,</span>
+                        <span class="n">Arrangement</span><span class="p">([</span>
+                            <span class="n">LeftRightNaryOperator</span><span class="p">({</span><span class="s">&#39;&#39;</span><span class="p">}),</span>
+                        <span class="p">]))</span>
+
+    <span class="n">tt_meta_or</span> <span class="o">=</span> <span class="n">TopDownTreeTransducer</span><span class="p">(</span><span class="s">&quot;Meta OR&quot;</span><span class="p">,</span>
+                        <span class="n">Arrangement</span><span class="p">([</span>
+                            <span class="n">LeftRightNaryOperator</span><span class="p">({</span><span class="s">&#39;&#39;</span><span class="p">}),</span>
+                        <span class="p">]))</span>
+
+    <span class="c">#endregion</span>
+
+    <span class="n">default_lyc_transducer_chain</span> <span class="o">=</span> <span class="p">[</span><span class="n">tt_constituent</span><span class="p">,</span>
+                                <span class="n">tt_primary</span><span class="p">,</span>
+                                <span class="c"># tt_block,</span>
+                                <span class="n">tt_infix_special_ops</span><span class="p">,</span>
+                                <span class="n">tt_prefix</span><span class="p">,</span>
+                                <span class="n">tt_punctuation</span><span class="p">,</span>
+                                <span class="n">tt_product</span><span class="p">,</span>
+                                <span class="n">tt_addition</span><span class="p">,</span>
+                                <span class="n">tt_shift</span><span class="p">,</span>
+                                <span class="c"># tt_dots,</span>
+                                <span class="n">tt_casting</span><span class="p">,</span>
+                                <span class="n">tt_arrow</span><span class="p">,</span>
+                                <span class="n">tt_comparison</span><span class="p">,</span>
+                                <span class="n">tt_equality</span><span class="p">,</span>
+                                <span class="n">tt_bit_and</span><span class="p">,</span>
+                                <span class="n">tt_bit_xor</span><span class="p">,</span>
+                                <span class="n">tt_bit_or</span><span class="p">,</span>
+                                <span class="n">tt_prefix_not</span><span class="p">,</span>
+                                <span class="n">tt_bool_and</span><span class="p">,</span>
+                                <span class="n">tt_bool_or</span><span class="p">,</span>
+                                <span class="n">tt_if_else</span><span class="p">,</span>
+                                <span class="n">tt_infix_for</span><span class="p">,</span>
+                                <span class="n">tt_assignments</span><span class="p">,</span>
+                                <span class="n">tt_meta_and</span><span class="p">,</span>
+                                <span class="n">tt_meta_or</span><span class="p">,</span>
+                                <span class="n">ConvertPreforms</span><span class="p">()</span>
+                               <span class="p">]</span>
+
+<span class="n">define_default_lyc_transducer_chain</span><span class="p">()</span>
+
+<span class="c">#endregion</span>
+
+
+<div class="viewcode-block" id="LycParser"><a class="viewcode-back" href="../../API/parsers.html#Parsers.LycParser.LycParser">[docs]</a><span class="k">class</span> <span class="nc">LycParser</span><span class="p">(</span><span class="n">RMTCParser</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    The parser for lyc. </span>
+<span class="sd">    </span>
+<span class="sd">    ::</span>
+<span class="sd">    </span>
+<span class="sd">        readtable default-readtable:</span>
+<span class="sd">            macro “(” “⦅” “[” “⟦” “{” “⦃” “‘” “⟨”:</span>
+<span class="sd">                tokenizer := tokenizers⫽delimiter</span>
+
+<span class="sd">            closing::</span>
+<span class="sd">                “\”” “)” “⦆” “]” “⟧”</span>
+<span class="sd">                “}” “⦄” “◁” “’” “⟩”</span>
+
+<span class="sd">            macro ““”:</span>
+<span class="sd">                tokenizer := tokenizers⫽delimited-symbol</span>
+<span class="sd">                preserve-leading-whitespace</span>
+
+<span class="sd">            macro “‘”:</span>
+<span class="sd">                tokenizer := tokenizers⫽quote</span>
+
+<span class="sd">            macro ““”:</span>
+<span class="sd">                tokenizer := tokenizers⫽string</span>
+<span class="sd">                preserve-leading-whitespace</span>
+
+<span class="sd">            macro “#”:</span>
+<span class="sd">                tokenizer := tokenizers⫽comment</span>
+<span class="sd">                preserve-leading-whitespace</span>
+
+<span class="sd">            macro “##”:</span>
+<span class="sd">                tokenizer := tokenizers⫽raw-comment</span>
+<span class="sd">                preserve-leading-whitespace</span>
+
+<span class="sd">            macro “literate▷\n”:</span>
+<span class="sd">                tokenizer := tokenizers⫽literate</span>
+<span class="sd">                </span>
+<span class="sd">            isolated-constituent::</span>
+<span class="sd">                “” “” “” “” “” “”</span>
+<span class="sd">                “” “” “” “” “” “”</span>
+<span class="sd">                “.” “” ““ “” “” “~”</span>
+<span class="sd">                “*” “” “” “” “&amp;” ““, “\\”</span>
+<span class="sd">                “$” “/” “⫽”</span>
+<span class="sd">                ““” “” “!” “&amp;” “\\@” “~@”</span>
+<span class="sd">                “” “” “%”</span>
+<span class="sd">                “” “”</span>
+<span class="sd">                “&lt;&lt;” “&gt;&gt;”</span>
+<span class="sd">                “&lt;” “&gt;” “≤” “≥” “∈” “∉”</span>
+<span class="sd">                “=” “≠”</span>
+<span class="sd">                “^”</span>
+<span class="sd">                “|” “” # second | is meta-|</span>
+<span class="sd">                “”     # meta-&amp;</span>
+<span class="sd">                “:=” “+=” “-=” “×=” “÷=” “%=” “&gt;&gt;=”</span>
+<span class="sd">                “&lt;&lt;=” “&amp;=” “^=” “|=” “≤ₜ” “and=” “or=“</span>
+
+<span class="sd">            punctuation:: “:” “;” “,”</span>
+
+<span class="sd">            invalid “\t”:</span>
+<span class="sd">                error-message := “Tabs are not allowed as whitespace.”</span>
+
+<span class="sd">            whitespace “ ”</span>
+
+<span class="sd">            newline “\n”</span>
+
+<span class="sd">            default-properties:</span>
+<span class="sd">                type := &#39;constituent</span>
+
+<span class="sd">        transducer-chain default-transducer-chain:</span>
+<span class="sd">            primary:</span>
+<span class="sd">                «Comment»</span>
+<span class="sd">                «Raw Comment»</span>
+<span class="sd">                «Left-Right Unary Prefix No-space Operator» “\\”</span>
+<span class="sd">                «Left-Right Unary Prefix No-space Operator» “~”</span>
+<span class="sd">                «Left-Right Unary Prefix No-space Operator» “$”</span>
+<span class="sd">                «Left-Right Unary Prefix No-space Operator» “”</span>
+<span class="sd">                «Left-Right Unary Prefix No-space Operator» “”</span>
+<span class="sd">                </span>
+<span class="sd">                etc</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">RMTCParser</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">TokenizationContext</span><span class="p">(</span><span class="s">&quot;Lyc Tokenization Context&quot;</span><span class="p">),</span>
+                            <span class="n">default_lyc_readtable</span><span class="p">,</span>
+                            <span class="n">IndentationReadtableTokenizer</span><span class="p">,</span>
+                            <span class="n">default_lyc_transducer_chain</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenization_context</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+            <span class="c"># Tokenizer classes</span>
+            <span class="n">DelimiterTokenizer</span> <span class="o">=</span> <span class="n">DelimiterTokenizer</span><span class="p">,</span>
+            <span class="n">StringTokenizer</span> <span class="o">=</span> <span class="n">StringTokenizer</span><span class="p">,</span>
+            <span class="n">DelimitedSymbolTokenizer</span> <span class="o">=</span> <span class="n">DelimitedIdentifierTokenizer</span><span class="p">,</span>
+            <span class="n">CommentTokenizer</span> <span class="o">=</span> <span class="n">CommentTokenizer</span><span class="p">,</span>
+            <span class="n">RawCommentTokenizer</span> <span class="o">=</span> <span class="n">RawCommentTokenizer</span><span class="p">,</span>
+            <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_get_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code_or_stream</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CharacterStream</span><span class="p">]):</span>
+        <span class="n">stream</span> <span class="o">=</span> <span class="n">RMTCParser</span><span class="o">.</span><span class="n">_get_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code_or_stream</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">IndentedCharacterStream</span><span class="p">):</span>
+            <span class="n">stream</span> <span class="o">=</span> <span class="n">IndentedCharacterStream</span><span class="p">(</span><span class="n">code_or_stream</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stream</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bruno Loff.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

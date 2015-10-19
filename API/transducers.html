@@ -99,6 +99,21 @@
 <li class="toctree-l2"><a class="reference internal" href="#comments">Comments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#constituents">Constituents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#defaultpunctuation">DefaultPunctuation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#delimiters">Delimiters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ifelse">IfElse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#leftrightbinaryoperator">LeftRightBinaryOperator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#leftrightbinaryoperatorreversedargs">LeftRightBinaryOperatorReversedArgs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#leftrightbinaryoperatortwosymbols">LeftRightBinaryOperatorTwoSymbols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#leftrightbinarytokencapturingoperator">LeftRightBinaryTokenCapturingOperator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#leftrightnaryoperator">LeftRightNaryOperator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#leftrightunarypostfixnospaceoperator">LeftRightUnaryPostfixNospaceOperator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#leftrightunarypostfixnospacetokencapturingoperator">LeftRightUnaryPostfixNospaceTokenCapturingOperator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#leftrightunaryprefixnospaceoperator">LeftRightUnaryPrefixNospaceOperator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#leftrightunaryprefixnospacetokencapturingoperator">LeftRightUnaryPrefixNospaceTokenCapturingOperator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rightleftbinaryoperator">RightLeftBinaryOperator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rightleftunaryprefixnospaceoperator">RightLeftUnaryPrefixNospaceOperator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rightleftunaryprefixoperator">RightLeftUnaryPrefixOperator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#strings">Strings</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="parsers.html">Parsers</a></li>
@@ -367,6 +382,245 @@ some subclass of <a class="reference internal" href="syntax.html#node"><em>Node<
 </pre></div>
 </div>
 <p>where <code class="docutils literal highlight highlight-python"><span class="n">X</span></code> is the punctuator&#8217;s <code class="docutils literal highlight highlight-python"><span class="n">end_punctuation_marker</span></code>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="delimiters">
+<span id="id13"></span><h2>Delimiters<a class="headerlink" href="#delimiters" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.Delimiters"></span><dl class="class">
+<dt id="Transducers.Arrangements.Delimiters.ApplyParenthesis">
+<em class="property">class </em><tt class="descname">ApplyParenthesis</tt><a class="reference internal" href="../_modules/Transducers/Arrangements/Delimiters.html#ApplyParenthesis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.Delimiters.ApplyParenthesis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the transformation:</p>
+<div class="highlight-python"><div class="highlight"><pre>BEGIN_MACRO(&quot;⦅&quot;) BEGIN ⋅  END END_MACRO  ⟨⦅⦆⟩ ⋅
+</pre></div>
+</div>
+<p>Signals error if there is more than one <code class="docutils literal highlight highlight-python">BEGIN  END</code> sequence.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Transducers.Arrangements.Delimiters.ParenthesisWithHead">
+<em class="property">class </em><tt class="descname">ParenthesisWithHead</tt><a class="reference internal" href="../_modules/Transducers/Arrangements/Delimiters.html#ParenthesisWithHead"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.Delimiters.ParenthesisWithHead" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the transformation:</p>
+<div class="highlight-python"><div class="highlight"><pre>head BEGIN_MACRO(&quot;(&quot;) ⋅ BEGIN  END END_MACRO  ⟨⦅head ⦆⟩ ⋅
+</pre></div>
+</div>
+<p>when there is zero whitespace between <code class="docutils literal highlight highlight-python"><span class="n">head</span></code> and the <code class="docutils literal highlight highlight-python"><span class="n">BEGIN_MACRO</span></code> token.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Transducers.Arrangements.Delimiters.ParenthesisNoHead">
+<em class="property">class </em><tt class="descname">ParenthesisNoHead</tt><a class="reference internal" href="../_modules/Transducers/Arrangements/Delimiters.html#ParenthesisNoHead"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.Delimiters.ParenthesisNoHead" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the transformation:</p>
+<div class="highlight-python"><div class="highlight"><pre>BEGIN_MACRO(&quot;(&quot;) ⋅ (BEGIN  END)* END_MACRO  ⟨⟅*⟆⟩ ⋅
+</pre></div>
+</div>
+<p>which removes BEGIN and END tokens, wraps what&#8217;s left in a PreTuple, and that in a Punctuator. The list of punctuation
+tokens given to the punctuator is the appending of all lists of punctuation tokens in each <code class="docutils literal highlight highlight-python">BEGIN  END</code> pair.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Transducers.Arrangements.Delimiters.Delimiters">
+<em class="property">class </em><tt class="descname">Delimiters</tt><big>(</big><em>opening_delimiters</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/Delimiters.html#Delimiters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.Delimiters.Delimiters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the transformations:</p>
+<div class="highlight-python"><div class="highlight"><pre>head BEGIN_MACRO(&quot;[&quot;) ⋅ (BEGIN  END)* END_MACRO  ⟨⦅@[] head *⦆⟩ ⋅
+
+BEGIN_MACRO(&quot;[&quot;) ⋅ (BEGIN  END)* END_MACRO  ⟨⦅[] *⦆⟩ ⋅
+</pre></div>
+</div>
+<p>Where <code class="docutils literal highlight highlight-python">[</code>  can be any string in the <code class="docutils literal highlight highlight-python"><span class="n">opening_delimiters</span></code> attribute.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Transducers.Arrangements.Delimiters.Quote">
+<em class="property">class </em><tt class="descname">Quote</tt><big>(</big><em>opening_delimiters</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/Delimiters.html#Quote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.Delimiters.Quote" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the transformation:</p>
+<div class="highlight-python"><div class="highlight"><pre>BEGIN_MACRO(&quot;‘&quot;) ⋅  END_MACRO  ⦅quote ⦆ ⋅
+</pre></div>
+</div>
+<p>Where <code class="docutils literal highlight highlight-python">‘</code> can be any string in the <code class="docutils literal highlight highlight-python"><span class="n">opening_delimiters</span></code> attribute.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="ifelse">
+<span id="id14"></span><h2>IfElse<a class="headerlink" href="#ifelse" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.IfElse"></span><dl class="class">
+<dt id="Transducers.Arrangements.IfElse.InfixIfElse">
+<em class="property">class </em><tt class="descname">InfixIfElse</tt><big>(</big><em>set_vals</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/IfElse.html#InfixIfElse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.IfElse.InfixIfElse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the transformation:</p>
+<div class="highlight-python"><div class="highlight"><pre>a X b Y ⋅ c  ⦅X b a ⦅Y c⦆⦆ ⋅
+</pre></div>
+</div>
+<p>E.g. for X = if, Y = else:</p>
+<div class="highlight-python"><div class="highlight"><pre>a if b else ⋅ c  ⦅if b a ⦅else c⦆⦆ ⋅
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="Transducers.Arrangements.IfElse.IfElifElse">
+<em class="property">class </em><tt class="descname">IfElifElse</tt><a class="reference internal" href="../_modules/Transducers/Arrangements/IfElse.html#IfElifElse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.IfElse.IfElifElse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the transformation:</p>
+<div class="highlight-python"><div class="highlight"><pre>⦅if ⦆ ⋅ ⦅elif ⦆* ⦅else ⦆?  ⦅if  ⦅elif ⦆* ⦅else ⦆?⦆⋅
+</pre></div>
+</div>
+<p>(i.e. places the elifs and else forms inside the preceeding if form)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="leftrightbinaryoperator">
+<span id="id15"></span><h2>LeftRightBinaryOperator<a class="headerlink" href="#leftrightbinaryoperator" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.LeftRightBinaryOperator"></span><dl class="class">
+<dt id="Transducers.Arrangements.LeftRightBinaryOperator.LeftRightBinaryOperator">
+<em class="property">class </em><tt class="descname">LeftRightBinaryOperator</tt><big>(</big><em>sym_vals</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/LeftRightBinaryOperator.html#LeftRightBinaryOperator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.LeftRightBinaryOperator.LeftRightBinaryOperator" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-python"><div class="highlight"><pre>a X ⋅ b  ⦅X a b⦆ ⋅
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="leftrightbinaryoperatorreversedargs">
+<span id="id16"></span><h2>LeftRightBinaryOperatorReversedArgs<a class="headerlink" href="#leftrightbinaryoperatorreversedargs" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.LeftRightBinaryOperatorReversedArgs"></span><dl class="class">
+<dt id="Transducers.Arrangements.LeftRightBinaryOperatorReversedArgs.LeftRightBinaryOperatorReversedArgs">
+<em class="property">class </em><tt class="descname">LeftRightBinaryOperatorReversedArgs</tt><big>(</big><em>sym_vals</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/LeftRightBinaryOperatorReversedArgs.html#LeftRightBinaryOperatorReversedArgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.LeftRightBinaryOperatorReversedArgs.LeftRightBinaryOperatorReversedArgs" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-python"><div class="highlight"><pre>a X ⋅ b  ⦅X b a⦆ ⋅
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="leftrightbinaryoperatortwosymbols">
+<span id="id17"></span><h2>LeftRightBinaryOperatorTwoSymbols<a class="headerlink" href="#leftrightbinaryoperatortwosymbols" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.LeftRightBinaryOperatorTwoSymbols"></span><dl class="class">
+<dt id="Transducers.Arrangements.LeftRightBinaryOperatorTwoSymbols.LeftRightBinaryOperatorTwoSymbols">
+<em class="property">class </em><tt class="descname">LeftRightBinaryOperatorTwoSymbols</tt><big>(</big><em>sym_vals</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/LeftRightBinaryOperatorTwoSymbols.html#LeftRightBinaryOperatorTwoSymbols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.LeftRightBinaryOperatorTwoSymbols.LeftRightBinaryOperatorTwoSymbols" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-python"><div class="highlight"><pre>a X Y ⋅ b  ⦅X-Y a b⦆ ⋅
+</pre></div>
+</div>
+<p>E.g. for X = is, Y = not:</p>
+<div class="highlight-python"><div class="highlight"><pre>a is not ⋅ b  ⦅is-not a b⦆ ⋅
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="leftrightbinarytokencapturingoperator">
+<span id="id18"></span><h2>LeftRightBinaryTokenCapturingOperator<a class="headerlink" href="#leftrightbinarytokencapturingoperator" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.LeftRightBinaryTokenCapturingOperator"></span><dl class="class">
+<dt id="Transducers.Arrangements.LeftRightBinaryTokenCapturingOperator.LeftRightBinaryTokenCapturingOperator">
+<em class="property">class </em><tt class="descname">LeftRightBinaryTokenCapturingOperator</tt><big>(</big><em>token_vals</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/LeftRightBinaryTokenCapturingOperator.html#LeftRightBinaryTokenCapturingOperator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.LeftRightBinaryTokenCapturingOperator.LeftRightBinaryTokenCapturingOperator" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-python"><div class="highlight"><pre>a X ⋅ b  ⦅X a b⦆ ⋅
+</pre></div>
+</div>
+<p><code class="docutils literal highlight highlight-python"><span class="n">b</span></code> can be of the form <code class="docutils literal highlight highlight-python">BEGIN  END</code> or <code class="docutils literal highlight highlight-python">BEGIN_MACRO  END_MACRO</code>, and it will be captured as a unit.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="leftrightnaryoperator">
+<span id="id19"></span><h2>LeftRightNaryOperator<a class="headerlink" href="#leftrightnaryoperator" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.LeftRightNaryOperator"></span><dl class="class">
+<dt id="Transducers.Arrangements.LeftRightNaryOperator.LeftRightNaryOperator">
+<em class="property">class </em><tt class="descname">LeftRightNaryOperator</tt><big>(</big><em>sym_vals</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/LeftRightNaryOperator.html#LeftRightNaryOperator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.LeftRightNaryOperator.LeftRightNaryOperator" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-python"><div class="highlight"><pre>a X ⋅ b1 X b2 X  X bn  ⦅X a b1 b2  bn⦆ ⋅
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="leftrightunarypostfixnospaceoperator">
+<span id="id20"></span><h2>LeftRightUnaryPostfixNospaceOperator<a class="headerlink" href="#leftrightunarypostfixnospaceoperator" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.LeftRightUnaryPostfixNospaceOperator"></span><dl class="class">
+<dt id="Transducers.Arrangements.LeftRightUnaryPostfixNospaceOperator.LeftRightUnaryPostfixNospaceOperator">
+<em class="property">class </em><tt class="descname">LeftRightUnaryPostfixNospaceOperator</tt><big>(</big><em>sym_vals</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/LeftRightUnaryPostfixNospaceOperator.html#LeftRightUnaryPostfixNospaceOperator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.LeftRightUnaryPostfixNospaceOperator.LeftRightUnaryPostfixNospaceOperator" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-python"><div class="highlight"><pre>a X ⋅  ⦅X a⦆ ⋅
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="leftrightunarypostfixnospacetokencapturingoperator">
+<span id="id21"></span><h2>LeftRightUnaryPostfixNospaceTokenCapturingOperator<a class="headerlink" href="#leftrightunarypostfixnospacetokencapturingoperator" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.LeftRightUnaryPostfixNospaceTokenCapturingOperator"></span><dl class="class">
+<dt id="Transducers.Arrangements.LeftRightUnaryPostfixNospaceTokenCapturingOperator.LeftRightUnaryPostfixNospaceTokenCapturingOperator">
+<em class="property">class </em><tt class="descname">LeftRightUnaryPostfixNospaceTokenCapturingOperator</tt><big>(</big><em>sym_vals</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/LeftRightUnaryPostfixNospaceTokenCapturingOperator.html#LeftRightUnaryPostfixNospaceTokenCapturingOperator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.LeftRightUnaryPostfixNospaceTokenCapturingOperator.LeftRightUnaryPostfixNospaceTokenCapturingOperator" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-python"><div class="highlight"><pre>a X ⋅  ⦅X a⦆ ⋅
+</pre></div>
+</div>
+<p>when there is no whitespace between <code class="docutils literal highlight highlight-python"><span class="n">a</span></code> and <code class="docutils literal highlight highlight-python"><span class="n">X</span></code>. <code class="docutils literal highlight highlight-python"><span class="n">a</span></code> can be of the form <code class="docutils literal highlight highlight-python">BEGIN  END</code> or
+<code class="docutils literal highlight highlight-python">BEGIN_MACRO  END_MACRO</code>, and it will be captured as a unit.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="leftrightunaryprefixnospaceoperator">
+<span id="id22"></span><h2>LeftRightUnaryPrefixNospaceOperator<a class="headerlink" href="#leftrightunaryprefixnospaceoperator" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.LeftRightUnaryPrefixNospaceOperator"></span><dl class="class">
+<dt id="Transducers.Arrangements.LeftRightUnaryPrefixNospaceOperator.LeftRightUnaryPrefixNospaceOperator">
+<em class="property">class </em><tt class="descname">LeftRightUnaryPrefixNospaceOperator</tt><big>(</big><em>token_vals</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/LeftRightUnaryPrefixNospaceOperator.html#LeftRightUnaryPrefixNospaceOperator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.LeftRightUnaryPrefixNospaceOperator.LeftRightUnaryPrefixNospaceOperator" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-python"><div class="highlight"><pre>X ⋅ b  ⦅X b⦆ ⋅
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="leftrightunaryprefixnospacetokencapturingoperator">
+<span id="id23"></span><h2>LeftRightUnaryPrefixNospaceTokenCapturingOperator<a class="headerlink" href="#leftrightunaryprefixnospacetokencapturingoperator" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.LeftRightUnaryPrefixNospaceTokenCapturingOperator"></span><dl class="class">
+<dt id="Transducers.Arrangements.LeftRightUnaryPrefixNospaceTokenCapturingOperator.LeftRightUnaryPrefixNospaceTokenCapturingOperator">
+<em class="property">class </em><tt class="descname">LeftRightUnaryPrefixNospaceTokenCapturingOperator</tt><big>(</big><em>token_vals</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/LeftRightUnaryPrefixNospaceTokenCapturingOperator.html#LeftRightUnaryPrefixNospaceTokenCapturingOperator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.LeftRightUnaryPrefixNospaceTokenCapturingOperator.LeftRightUnaryPrefixNospaceTokenCapturingOperator" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-python"><div class="highlight"><pre>X ⋅ b  ⦅X b⦆ ⋅
+</pre></div>
+</div>
+<p><code class="docutils literal highlight highlight-python"><span class="n">b</span></code> can be of the form <code class="docutils literal highlight highlight-python">BEGIN  END</code> or <code class="docutils literal highlight highlight-python">BEGIN_MACRO  END_MACRO</code>, and it will be captured as a unit.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="rightleftbinaryoperator">
+<span id="id24"></span><h2>RightLeftBinaryOperator<a class="headerlink" href="#rightleftbinaryoperator" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.RightLeftBinaryOperator"></span><dl class="class">
+<dt id="Transducers.Arrangements.RightLeftBinaryOperator.RightLeftBinaryOperator">
+<em class="property">class </em><tt class="descname">RightLeftBinaryOperator</tt><big>(</big><em>sym_vals</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/RightLeftBinaryOperator.html#RightLeftBinaryOperator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.RightLeftBinaryOperator.RightLeftBinaryOperator" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-python"><div class="highlight"><pre>⋅ ⦅X a b⦆  a ⋅ X b
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="rightleftunaryprefixnospaceoperator">
+<span id="id25"></span><h2>RightLeftUnaryPrefixNospaceOperator<a class="headerlink" href="#rightleftunaryprefixnospaceoperator" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.RightLeftUnaryPrefixNospaceOperator"></span><dl class="class">
+<dt id="Transducers.Arrangements.RightLeftUnaryPrefixNospaceOperator.RightLeftUnaryPrefixNospaceOperator">
+<em class="property">class </em><tt class="descname">RightLeftUnaryPrefixNospaceOperator</tt><big>(</big><em>sym_vals</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/RightLeftUnaryPrefixNospaceOperator.html#RightLeftUnaryPrefixNospaceOperator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.RightLeftUnaryPrefixNospaceOperator.RightLeftUnaryPrefixNospaceOperator" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-python"><div class="highlight"><pre>⋅ ⦅X a⦆  ⋅ X a
+</pre></div>
+</div>
+<p>when there is no space between <code class="docutils literal highlight highlight-python"><span class="n">X</span></code> and <code class="docutils literal highlight highlight-python"><span class="n">a</span></code>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="rightleftunaryprefixoperator">
+<span id="id26"></span><h2>RightLeftUnaryPrefixOperator<a class="headerlink" href="#rightleftunaryprefixoperator" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.RightLeftUnaryPrefixOperator"></span><dl class="class">
+<dt id="Transducers.Arrangements.RightLeftUnaryPrefixOperator.RightLeftUnaryPrefixOperator">
+<em class="property">class </em><tt class="descname">RightLeftUnaryPrefixOperator</tt><big>(</big><em>sym_vals</em><big>)</big><a class="reference internal" href="../_modules/Transducers/Arrangements/RightLeftUnaryPrefixOperator.html#RightLeftUnaryPrefixOperator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.RightLeftUnaryPrefixOperator.RightLeftUnaryPrefixOperator" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-python"><div class="highlight"><pre>⋅ ⦅X a⦆  ⋅ X a
+</pre></div>
+</div>
+<p>there can be space between <code class="docutils literal highlight highlight-python"><span class="n">X</span></code> and <code class="docutils literal highlight highlight-python"><span class="n">a</span></code>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="strings">
+<span id="id27"></span><h2>Strings<a class="headerlink" href="#strings" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Transducers.Arrangements.Strings"></span><dl class="class">
+<dt id="Transducers.Arrangements.Strings.Strings">
+<em class="property">class </em><tt class="descname">Strings</tt><a class="reference internal" href="../_modules/Transducers/Arrangements/Strings.html#Strings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Transducers.Arrangements.Strings.Strings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes the string macro. If a single STRING token is inside it, converts into a string literal. Otherwise,
+converts into an <code class="docutils literal highlight highlight-python"><span class="nb">str</span></code> form.</p>
+<div class="highlight-python"><div class="highlight"><pre>BEGIN_MACRO(&quot;“&quot;) ⋅ STRING END_MACRO   Literal(string, value)
+
+BEGIN_MACRO(&quot;“&quot;) ⋅  END_MACRO   ⦅str ⦆ ⋅
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

@@ -1,0 +1,249 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Transducers.Arrangements.Strings &mdash; rmtc-parsing 0.1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="rmtc-parsing 0.1.1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> rmtc-parsing
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/streams.html">Streams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/syntax.html">Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/tokenization.html">Tokenization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/transducers.html">Transducers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/parsers.html">Parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">rmtc-parsing</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+        <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>Transducers.Arrangements.Strings</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Transducers.Arrangements.Strings</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">Syntax.__exports__</span> <span class="kn">import</span> <span class="n">Form</span><span class="p">,</span> <span class="n">Identifier</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">Syntax.Node</span> <span class="kn">import</span> <span class="n">Element</span>
+<span class="kn">from</span> <span class="nn">Syntax.Token</span> <span class="kn">import</span> <span class="n">is_token</span><span class="p">,</span> <span class="n">TOKEN</span>
+<span class="kn">from</span> <span class="nn">Transducers.ArrangementRule</span> <span class="kn">import</span> <span class="n">ArrangementRule</span>
+<span class="c"># from Semantics.Types.Bootstrap0 import String</span>
+
+<div class="viewcode-block" id="Strings"><a class="viewcode-back" href="../../../API/transducers.html#Transducers.Arrangements.Strings.Strings">[docs]</a><span class="k">class</span> <span class="nc">Strings</span><span class="p">(</span><span class="n">ArrangementRule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Processes the string macro. If a single STRING token is inside it, converts into a string literal. Otherwise,</span>
+<span class="sd">    converts into an ``str`` form.</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">       BEGIN_MACRO(&quot;“&quot;) ⋅ STRING END_MACRO   Literal(string, value)</span>
+
+<span class="sd">       BEGIN_MACRO(&quot;“&quot;) ⋅  END_MACRO   ⦅str ⦆ ⋅</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ArrangementRule</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;Strings&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">applies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">is_token</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">TOKEN</span><span class="o">.</span><span class="n">BEGIN_MACRO</span><span class="p">,</span> <span class="n">token_text</span><span class="o">=</span><span class="s">&quot;“&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">is_token</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">next</span><span class="p">,</span> <span class="n">TOKEN</span><span class="o">.</span><span class="n">STRING</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="n">element</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">parent</span>
+            <span class="n">string_token</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span>
+            <span class="n">parent</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+            <span class="n">parent</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+            <span class="n">string_token</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="s">&quot;STRING(PLACEHOLDER)&quot;</span><span class="p">,</span> <span class="n">string_token</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">string_token</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">string_token</span><span class="o">.</span><span class="n">next</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_form_element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">Form</span><span class="p">)</span>
+            <span class="n">new_form</span> <span class="o">=</span> <span class="n">new_form_element</span><span class="o">.</span><span class="n">code</span>
+            <span class="n">new_form</span><span class="o">.</span><span class="n">prepend</span><span class="p">(</span><span class="n">Identifier</span><span class="p">(</span><span class="s">&quot;str&quot;</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">range</span><span class="p">))</span>
+            <span class="c"># str BEGIN_MACRO(&#39;“&#39;) seq of STRING tokens, interspersed with Identifiers and BEGIN_MACRO / END_MACRO pairs END_MACRO</span>
+
+            <span class="n">new_form</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="c"># remove BEGIN_MACRO(&#39;“&#39;)</span>
+            <span class="n">new_form</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>  <span class="c"># remove END_MACRO</span>
+
+            <span class="n">elm</span> <span class="o">=</span> <span class="n">new_form</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c"># first element</span>
+            <span class="k">while</span> <span class="n">elm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">is_token</span><span class="p">(</span><span class="n">elm</span><span class="p">,</span> <span class="n">TOKEN</span><span class="o">.</span><span class="n">STRING</span><span class="p">):</span>
+                    <span class="n">elm</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="s">&quot;STRING(PLACEHOLDER)&quot;</span><span class="p">,</span> <span class="n">elm</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">elm</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">is_token</span><span class="p">(</span><span class="n">elm</span><span class="p">,</span> <span class="n">TOKEN</span><span class="o">.</span><span class="n">BEGIN_MACRO</span><span class="p">):</span>
+                    <span class="n">elm</span> <span class="o">=</span> <span class="n">elm</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">next</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">elm</span> <span class="o">=</span> <span class="n">elm</span><span class="o">.</span><span class="n">next</span>
+
+
+
+            <span class="k">return</span> <span class="n">new_form_element</span><span class="o">.</span><span class="n">next</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bruno Loff.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,460 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Transducers.Arrangements.Delimiters &mdash; rmtc-parsing 0.1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="rmtc-parsing 0.1.1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> rmtc-parsing
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/common.html">Common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/streams.html">Streams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/syntax.html">Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/tokenization.html">Tokenization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/transducers.html">Transducers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/parsers.html">Parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">rmtc-parsing</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+        <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>Transducers.Arrangements.Delimiters</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Transducers.Arrangements.Delimiters</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">Common.Util</span> <span class="kn">import</span> <span class="n">is_not_none</span>
+<span class="kn">from</span> <span class="nn">Syntax.Punctuator</span> <span class="kn">import</span> <span class="n">Punctuator</span>
+<span class="kn">from</span> <span class="nn">Syntax.__exports__</span> <span class="kn">import</span> <span class="n">Form</span><span class="p">,</span> <span class="n">Identifier</span>
+<span class="kn">from</span> <span class="nn">Syntax.PreTuple</span> <span class="kn">import</span> <span class="n">PreTuple</span>
+<span class="kn">from</span> <span class="nn">Syntax.Node</span> <span class="kn">import</span> <span class="n">Element</span>
+<span class="kn">from</span> <span class="nn">Syntax.Token</span> <span class="kn">import</span> <span class="n">is_token</span><span class="p">,</span> <span class="n">TOKEN</span>
+<span class="kn">from</span> <span class="nn">Transducers.ArrangementRule</span> <span class="kn">import</span> <span class="n">ArrangementRule</span>
+<span class="kn">from</span> <span class="nn">Common.Errors</span> <span class="kn">import</span> <span class="n">ArrangementError</span><span class="p">,</span> <span class="n">TokenizingError</span>
+<span class="kn">from</span> <span class="nn">Transducers.Arrangements.Block</span> <span class="kn">import</span> <span class="n">Block</span>
+
+
+<span class="k">class</span> <span class="nc">_delimiter_util</span><span class="p">:</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_opening_delimiter</span><span class="p">(</span><span class="n">element</span><span class="p">:</span><span class="n">Element</span><span class="p">,</span> <span class="n">opening_delimiter_str</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns ``True`` if the given element is a ``BEGIN_MACRO`` token with ``text == opening_delimiter_str``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">is_token</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">TOKEN</span><span class="o">.</span><span class="n">BEGIN_MACRO</span><span class="p">,</span> <span class="n">token_text</span><span class="o">=</span><span class="n">opening_delimiter_str</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_opening_delimiter_among</span><span class="p">(</span><span class="n">element</span><span class="p">:</span><span class="n">Element</span><span class="p">,</span> <span class="n">opening_delimiters</span><span class="p">:</span><span class="nb">set</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns ``True`` if the given element is a ``BEGIN_MACRO`` token with ``text in opening_delimiters``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">is_token</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">TOKEN</span><span class="o">.</span><span class="n">BEGIN_MACRO</span><span class="p">)</span> <span class="ow">and</span> <span class="n">element</span><span class="o">.</span><span class="n">text</span> <span class="ow">in</span> <span class="n">opening_delimiters</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">has_head_element</span><span class="p">(</span><span class="n">opening_delimiter</span><span class="p">:</span><span class="n">Element</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns ``True`` if the given element is preceeded by an element with no whitespace in between.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">possible_head_element</span> <span class="o">=</span> <span class="n">opening_delimiter</span><span class="o">.</span><span class="n">prev</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">is_not_none</span><span class="p">(</span><span class="n">possible_head_element</span><span class="p">,</span> <span class="s">&quot;.code.range.position_after.index&quot;</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="n">possible_head_element</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">range</span><span class="o">.</span><span class="n">position_after</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">opening_delimiter</span><span class="o">.</span><span class="n">range</span><span class="o">.</span><span class="n">first_position</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">has_unique_block</span><span class="p">(</span><span class="n">opening_delimiter_element</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns ``True`` if the given ``BEGIN_MACRO`` token is of the form::</span>
+
+<span class="sd">           BEGIN_MACRO BEGIN  END END_MACRO</span>
+
+<span class="sd">        (so there is a single ``BEGIN`` / ``END`` pair between the given ``BEGIN_MACRO`` and ``END_MACRO`` pair)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">closing_delimiter_element</span> <span class="o">=</span> <span class="n">opening_delimiter_element</span><span class="o">.</span><span class="n">end</span>
+        <span class="n">begin_element</span> <span class="o">=</span> <span class="n">opening_delimiter_element</span><span class="o">.</span><span class="n">next</span>
+        <span class="k">assert</span> <span class="n">is_token</span><span class="p">(</span><span class="n">begin_element</span><span class="p">,</span> <span class="n">TOKEN</span><span class="o">.</span><span class="n">BEGIN</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">begin_element</span><span class="o">.</span><span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+        <span class="n">end_element</span> <span class="o">=</span> <span class="n">begin_element</span><span class="o">.</span><span class="n">end</span>
+        <span class="k">assert</span> <span class="n">end_element</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="n">closing_delimiter_element</span> <span class="ow">or</span> <span class="n">is_token</span><span class="p">(</span><span class="n">end_element</span><span class="o">.</span><span class="n">next</span><span class="p">,</span> <span class="n">TOKEN</span><span class="o">.</span><span class="n">BEGIN</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">end_element</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="n">closing_delimiter_element</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_element_after</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Skips ``BEGIN_MACRO`` / ``END_MACRO`` and ``BEGIN`` / ``END`` pairs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">is_token</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">TOKEN</span><span class="o">.</span><span class="n">BEGIN_MACRO</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_token</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">TOKEN</span><span class="o">.</span><span class="n">BEGIN</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">element</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">next</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">join_all_args</span><span class="p">(</span><span class="n">element_containing_node</span><span class="p">,</span> <span class="n">begin_element</span><span class="p">,</span> <span class="n">block_name</span><span class="p">,</span> <span class="n">punctuator_skip_count</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies the transformation::</span>
+
+<span class="sd">           ⟅(BEGIN  END)*⟆   ⟨⟅*⟆⟩</span>
+
+<span class="sd">        where the left-hand ``⟅⟆`` denotes some :ref:`Node`. This removes BEGIN and END tokens, and the list of punctuation</span>
+<span class="sd">        tokens given to the punctuator is the appending of all lists of punctuation tokens in each ``BEGIN  END`` pair.</span>
+
+<span class="sd">        E.g. ``⟅BEGIN ab, c, END BEGIN d, e END⟆`` becomes ``⟨ab, c, d, e⟩``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">node</span> <span class="o">=</span> <span class="n">element_containing_node</span><span class="o">.</span><span class="n">code</span>
+
+        <span class="n">punctuation</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="n">begin_element</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">is_token</span><span class="p">(</span><span class="n">begin_element</span><span class="p">,</span> <span class="n">TOKEN</span><span class="o">.</span><span class="n">BEGIN</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">begin_element</span><span class="o">.</span><span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+            <span class="n">end_element</span> <span class="o">=</span> <span class="n">begin_element</span><span class="o">.</span><span class="n">end</span>
+            <span class="k">assert</span> <span class="n">is_token</span><span class="p">(</span><span class="n">end_element</span><span class="p">,</span> <span class="n">TOKEN</span><span class="o">.</span><span class="n">END</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">begin_element</span><span class="o">.</span><span class="n">indents</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ArrangementError</span><span class="p">(</span><span class="n">begin_element</span><span class="o">.</span><span class="n">indents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">range</span><span class="o">.</span><span class="n">first_position</span><span class="p">,</span> <span class="s">&quot;Unexpected indentation inside </span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="n">block_name</span><span class="p">)</span>
+            <span class="n">punctuation</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">begin_element</span><span class="o">.</span><span class="n">punctuation</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">begin_element</span><span class="p">)</span>
+            <span class="n">begin_element</span> <span class="o">=</span> <span class="n">end_element</span><span class="o">.</span><span class="n">next</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">end_element</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">punctuation</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">punctuator</span> <span class="o">=</span> <span class="n">Punctuator</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">punctuation</span><span class="p">,</span> <span class="n">punctuator_skip_count</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">element_containing_node</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">element_containing_node</span><span class="p">,</span> <span class="n">punctuator</span><span class="p">)</span><span class="o">.</span><span class="n">next</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">element_containing_node</span><span class="o">.</span><span class="n">next</span>
+
+
+
+<div class="viewcode-block" id="ApplyParenthesis"><a class="viewcode-back" href="../../../API/transducers.html#Transducers.Arrangements.Delimiters.ApplyParenthesis">[docs]</a><span class="k">class</span> <span class="nc">ApplyParenthesis</span><span class="p">(</span><span class="n">ArrangementRule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies the transformation::</span>
+
+<span class="sd">      BEGIN_MACRO(&quot;⦅&quot;) BEGIN ⋅  END END_MACRO  ⟨⦅⦆⟩ ⋅</span>
+
+<span class="sd">    Signals error if there is more than one ``BEGIN  END`` sequence.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ArrangementRule</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;Application Parenthesis&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_arrangement</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="n">Form</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">applies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_delimiter_util</span><span class="o">.</span><span class="n">is_opening_delimiter</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s">&#39;⦅&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
+        <span class="n">unique_block</span> <span class="o">=</span> <span class="n">_delimiter_util</span><span class="o">.</span><span class="n">has_unique_block</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">unique_block</span><span class="p">:</span>
+            <span class="c"># BEGIN_MACRO BEGIN ... END END_MACRO =&gt; BEGIN ... END</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">parent</span>
+            <span class="n">next_element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span>
+            <span class="n">parent</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="c"># remove BEGIN_MACRO &#39;(&#39;</span>
+            <span class="n">parent</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">end</span><span class="p">)</span> <span class="c"># remove END_MACRO &#39;)&#39;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">block_arrangement</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">next_element</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">TokenizingError</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">range</span><span class="p">,</span> <span class="s">&quot;Unexpected multiple blocks inside double-parenthesis.&quot;</span><span class="p">)</span>
+            <span class="c"># # BEGIN_MACRO BEGIN ... END BEGIN ... END END_MACRO =&gt; block( BEGIN ... END BEGIN ... END )</span>
+            <span class="c"># new_pre_block_element = element.parent.wrap(element, element.end, Form)</span>
+            <span class="c"># pre_block = new_pre_block_element.code</span>
+            <span class="c"># pre_block.remove(element) # remove BEGIN_MACRO &#39;(&#39;</span>
+            <span class="c"># pre_block.remove(element.end) # remove END_MACRO &#39;(&#39;</span>
+            <span class="c"># pre_block.prepend(Identifier(&quot;block&quot;))</span>
+            <span class="c"># return new_pre_block_element.next</span>
+
+
+<span class="c"># head( [BEGIN ... END]* ) =&gt; ⦅head &lt;...&gt;*))</span>
+
+</div>
+<div class="viewcode-block" id="ParenthesisWithHead"><a class="viewcode-back" href="../../../API/transducers.html#Transducers.Arrangements.Delimiters.ParenthesisWithHead">[docs]</a><span class="k">class</span> <span class="nc">ParenthesisWithHead</span><span class="p">(</span><span class="n">ArrangementRule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies the transformation::</span>
+
+<span class="sd">      head BEGIN_MACRO(&quot;(&quot;) ⋅ BEGIN  END END_MACRO  ⟨⦅head ⦆⟩ ⋅</span>
+
+<span class="sd">    when there is zero whitespace between ``head`` and the ``BEGIN_MACRO`` token.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ArrangementRule</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;Parenthesis&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">applies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_delimiter_util</span><span class="o">.</span><span class="n">is_opening_delimiter</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s">&#39;(&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_delimiter_util</span><span class="o">.</span><span class="n">has_head_element</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
+        <span class="n">new_form_element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">prev</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">Form</span><span class="p">)</span>
+        <span class="n">new_form</span> <span class="o">=</span> <span class="n">new_form_element</span><span class="o">.</span><span class="n">code</span>
+
+        <span class="n">begin_element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span>
+        <span class="n">new_form</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="c"># remove BEGIN_MACRO &#39;(&#39;</span>
+        <span class="n">new_form</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>  <span class="c"># remove END_MACRO &#39;)&#39;</span>
+        <span class="k">return</span> <span class="n">_delimiter_util</span><span class="o">.</span><span class="n">join_all_args</span><span class="p">(</span><span class="n">new_form_element</span><span class="p">,</span> <span class="n">begin_element</span><span class="p">,</span> <span class="s">&quot;head-prefixed parenthesized form&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ParenthesisNoHead"><a class="viewcode-back" href="../../../API/transducers.html#Transducers.Arrangements.Delimiters.ParenthesisNoHead">[docs]</a><span class="k">class</span> <span class="nc">ParenthesisNoHead</span><span class="p">(</span><span class="n">ArrangementRule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies the transformation::</span>
+
+<span class="sd">      BEGIN_MACRO(&quot;(&quot;) ⋅ (BEGIN  END)* END_MACRO  ⟨⟅*⟆⟩ ⋅</span>
+
+<span class="sd">    which removes BEGIN and END tokens, wraps what&#39;s left in a PreTuple, and that in a Punctuator. The list of punctuation</span>
+<span class="sd">    tokens given to the punctuator is the appending of all lists of punctuation tokens in each ``BEGIN  END`` pair.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ArrangementRule</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;Parenthesis&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_parenthesis_arrangement</span> <span class="o">=</span> <span class="n">ApplyParenthesis</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">applies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_delimiter_util</span><span class="o">.</span><span class="n">is_opening_delimiter</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s">&#39;(&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_delimiter_util</span><span class="o">.</span><span class="n">has_head_element</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
+        <span class="n">first_begin</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span>
+        <span class="k">assert</span> <span class="n">is_token</span><span class="p">(</span><span class="n">first_begin</span><span class="p">,</span> <span class="n">TOKEN</span><span class="o">.</span><span class="n">BEGIN</span><span class="p">)</span>
+        <span class="n">has_colon</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">is_token</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">TOKEN</span><span class="o">.</span><span class="n">PUNCTUATION</span><span class="p">,</span> <span class="s">&#39;:&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">first_begin</span><span class="o">.</span><span class="n">punctuation</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">has_colon</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_parenthesis_arrangement</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_as_tuple</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_as_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
+        <span class="n">new_tuple_element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">PreTuple</span><span class="p">)</span>
+        <span class="n">new_tuple</span> <span class="o">=</span> <span class="n">new_tuple_element</span><span class="o">.</span><span class="n">code</span>
+
+        <span class="n">begin_element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span>
+        <span class="n">new_tuple</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="c"># remove BEGIN_MACRO &#39;(&#39;</span>
+        <span class="n">new_tuple</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>  <span class="c"># remove END_MACRO &#39;)&#39;</span>
+        <span class="k">return</span> <span class="n">_delimiter_util</span><span class="o">.</span><span class="n">join_all_args</span><span class="p">(</span><span class="n">new_tuple_element</span><span class="p">,</span> <span class="n">begin_element</span><span class="p">,</span> <span class="s">&quot;tuple&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="Delimiters"><a class="viewcode-back" href="../../../API/transducers.html#Transducers.Arrangements.Delimiters.Delimiters">[docs]</a><span class="k">class</span> <span class="nc">Delimiters</span><span class="p">(</span><span class="n">ArrangementRule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies the transformations::</span>
+
+<span class="sd">      head BEGIN_MACRO(&quot;[&quot;) ⋅ (BEGIN  END)* END_MACRO  ⟨⦅@[] head *⦆⟩ ⋅</span>
+
+<span class="sd">      BEGIN_MACRO(&quot;[&quot;) ⋅ (BEGIN  END)* END_MACRO  ⟨⦅[] *⦆⟩ ⋅</span>
+
+<span class="sd">    Where ``[``  can be any string in the ``opening_delimiters`` attribute.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opening_delimiters</span><span class="p">):</span>
+        <span class="n">ArrangementRule</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;Delimiters&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opening_delimiters</span> <span class="o">=</span> <span class="n">opening_delimiters</span>
+
+    <span class="k">def</span> <span class="nf">applies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_delimiter_util</span><span class="o">.</span><span class="n">is_opening_delimiter_among</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">opening_delimiters</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
+        <span class="n">has_head</span> <span class="o">=</span> <span class="n">_delimiter_util</span><span class="o">.</span><span class="n">has_head_element</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">has_head</span><span class="p">:</span>
+            <span class="n">new_form_element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">prev</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">Form</span><span class="p">)</span>
+            <span class="n">new_form</span> <span class="o">=</span> <span class="n">new_form_element</span><span class="o">.</span><span class="n">code</span>
+            <span class="n">new_form</span><span class="o">.</span><span class="n">prepend</span><span class="p">(</span><span class="n">Identifier</span><span class="p">(</span><span class="s">&quot;@&quot;</span> <span class="o">+</span> <span class="n">element</span><span class="o">.</span><span class="n">text</span> <span class="o">+</span> <span class="n">element</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">range</span><span class="p">))</span>
+            <span class="c"># @[] head BEGIN_MACRO(&#39;[&#39;) begin ... end END_MACRO(&#39;]&#39;)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_form_element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">Form</span><span class="p">)</span>
+            <span class="n">new_form</span> <span class="o">=</span> <span class="n">new_form_element</span><span class="o">.</span><span class="n">code</span>
+            <span class="n">new_form</span><span class="o">.</span><span class="n">prepend</span><span class="p">(</span><span class="n">Identifier</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">text</span> <span class="o">+</span> <span class="n">element</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">range</span><span class="p">))</span>
+            <span class="c"># @[] BEGIN_MACRO(&#39;[&#39;) begin head ... end END_MACRO(&#39;]&#39;)</span>
+
+        <span class="n">begin_element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">next</span>
+        <span class="n">new_form</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="c"># remove BEGIN_MACRO(&#39;[&#39;)</span>
+        <span class="n">new_form</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">new_form</span><span class="o">.</span><span class="n">last</span><span class="p">)</span>  <span class="c"># remove END_MACRO(&#39;]&#39;)</span>
+
+        <span class="k">return</span> <span class="n">_delimiter_util</span><span class="o">.</span><span class="n">join_all_args</span><span class="p">(</span><span class="n">new_form_element</span><span class="p">,</span> <span class="n">begin_element</span><span class="p">,</span> <span class="s">&quot;head-prefixed parenthesized form&quot;</span><span class="p">,</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">has_head</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span>
+
+
+
+
+
+</div>
+<div class="viewcode-block" id="Quote"><a class="viewcode-back" href="../../../API/transducers.html#Transducers.Arrangements.Delimiters.Quote">[docs]</a><span class="k">class</span> <span class="nc">Quote</span><span class="p">(</span><span class="n">ArrangementRule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies the transformation::</span>
+
+<span class="sd">      BEGIN_MACRO(&quot;‘&quot;) ⋅  END_MACRO  ⦅quote ⦆ ⋅</span>
+
+<span class="sd">    Where ``‘`` can be any string in the ``opening_delimiters`` attribute.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opening_delimiters</span><span class="p">):</span>
+        <span class="n">ArrangementRule</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;SingleQuote&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opening_delimiters</span> <span class="o">=</span> <span class="n">opening_delimiters</span>
+
+    <span class="k">def</span> <span class="nf">applies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_delimiter_util</span><span class="o">.</span><span class="n">is_opening_delimiter_among</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">opening_delimiters</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
+        <span class="n">new_form_element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">Form</span><span class="p">)</span>
+        <span class="n">new_form</span> <span class="o">=</span> <span class="n">new_form_element</span><span class="o">.</span><span class="n">code</span>
+        <span class="n">new_form</span><span class="o">.</span><span class="n">prepend</span><span class="p">(</span><span class="n">Identifier</span><span class="p">(</span><span class="s">&quot;quote&quot;</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">range</span><span class="p">))</span>
+
+        <span class="n">new_form</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="c"># remove BEGIN_MACRO &#39;</span>
+        <span class="n">new_form</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">new_form</span><span class="o">.</span><span class="n">last</span><span class="p">)</span>  <span class="c"># remove END_MACRO &#39;</span>
+
+        <span class="k">return</span> <span class="n">new_form_element</span><span class="o">.</span><span class="n">next</span>
+</pre></div></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bruno Loff.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
